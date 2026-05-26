@@ -364,7 +364,7 @@ function submitTicket(){
     sla:         SLA[priority],
     submitted_at:new Date().toLocaleString('en-GB'),
     attachment:  attachedFile || 'None',
-    ticket_url:  `https://inquisitive-cendol-a89c7c.netlify.app/#ticket-${ticketId}`,
+    ticket_url:  `https://raseltea.github.io/support-portal/#ticket-${ticketId}`,
     message:     `${typeLabel} ticket from ${name} (${email})\n\nTitle: ${title}\n\nDescription:\n${desc}\n\nPriority: ${priority}`,
   }).then(async () => {
     // Save to Airtable
@@ -411,4 +411,3 @@ function resetForm(){
 </script>
 </body>
 </html>
- 
