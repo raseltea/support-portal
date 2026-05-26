@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Raise a Support Ticket</title>
+<link href="https://fonts.googleapis.com/css2?family=Charlie+Display:wght@600;700&family=Charlie+Text:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0C66E4;--blue-hover:#0055CC;--blue-light:#E9F2FF;
+  --green:#1F845A;--green-bg:#DCFFF1;
+  --red:#CA3521;--red-bg:#FFEDEB;
+  --amber:#974F0C;--amber-bg:#FFF7D6;
+  --purple:#6E5DC6;--purple-bg:#F3F0FF;
+  --text:#172B4D;--sub:#626F86;--muted:#8993A4;
+  --border:#DFE1E6;--bg:#F7F8F9;--surface:#fff;
+  --shadow:0 1px 3px rgba(9,30,66,.1),0 0 0 1px rgba(9,30,66,.05);
+  --shadow-lg:0 8px 32px rgba(9,30,66,.15);
+}
+body{background:var(--bg);color:var(--text);font-family:'Charlie Text','Segoe UI',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:var(--blue);padding:0 24px;height:56px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0}
+.header-logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.logo-name{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.2px}
+.header-sub{font-size:12px;color:rgba(255,255,255,.7)}
+
+/* MAIN */
+main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px 60px}
+.container{width:100%;max-width:600px}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:32px}
+.hero h1{font-family:'Charlie Display',sans-serif;font-size:28px;font-weight:700;
+  color:var(--text);letter-spacing:-.4px;margin-bottom:8px}
+.hero p{font-size:15px;color:var(--sub);line-height:1.6}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:28px;box-shadow:var(--shadow)}
+
+/* STEP LABEL */
+.step-label{font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.step-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* TYPE GRID */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.type-card{border:2px solid var(--border);border-radius:8px;padding:14px 12px;
+  cursor:pointer;transition:all .15s;background:var(--surface);text-align:left}
+.type-card:hover{border-color:#C1C7D0;background:var(--bg)}
+.type-card.selected{border-color:var(--blue);background:var(--blue-light)}
+.type-card.selected .type-name{color:var(--blue)}
+.type-icon{font-size:20px;margin-bottom:6px}
+.type-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.type-desc{font-size:11px;color:var(--sub);line-height:1.4}
+
+/* FIELDS */
+.field{margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}
+.required{color:var(--red)}
+input,select,textarea{width:100%;border:2px solid var(--border);border-radius:6px;
+  padding:9px 12px;font-family:inherit;font-size:14px;color:var(--text);
+  background:var(--surface);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)}
+textarea{resize:vertical;min-height:110px;line-height:1.6}
+select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23626F86'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ATTACH */
+.attach-zone{border:2px dashed var(--border);border-radius:6px;padding:16px;
+  text-align:center;cursor:pointer;color:var(--sub);font-size:13px;
+  transition:border-color .15s,background .15s}
+.attach-zone:hover{border-color:var(--blue);background:var(--blue-light)}
+.attach-zone.has-file{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+
+/* SLA HINT */
+.sla-hint{display:flex;align-items:center;gap:8px;padding:10px 14px;
+  background:var(--amber-bg);border:1px solid rgba(151,79,12,.2);
+  border-radius:6px;font-size:13px;color:var(--amber);margin-bottom:20px}
+
+/* SUBMIT BTN */
+.btn-submit{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;
+  border-radius:6px;font-family:inherit;font-size:15px;font-weight:600;
+  cursor:pointer;transition:background .15s;letter-spacing:-.1px}
+.btn-submit:hover{background:var(--blue-hover)}
+.btn-submit:disabled{opacity:.55;cursor:not-allowed}
+
+/* STATES */
+#sending-state{display:none;text-align:center;padding:40px 20px}
+.spinner{width:40px;height:40px;border:3px solid var(--blue-light);border-top-color:var(--blue);
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+#success-state{display:none;text-align:center;padding:48px 20px;animation:fadeUp .4s ease}
+.success-icon{font-size:56px;margin-bottom:16px}
+#success-state h2{font-family:'Charlie Display',sans-serif;font-size:22px;font-weight:700;
+  color:var(--green);margin-bottom:8px}
+#success-state p{color:var(--sub);font-size:14px;line-height:1.6}
+.ticket-ref{display:inline-block;margin-top:12px;padding:6px 14px;
+  background:var(--green-bg);border:1px solid rgba(31,132,90,.2);
+  border-radius:20px;font-size:13px;font-weight:600;color:var(--green)}
+
+#error-msg{display:none;padding:10px 14px;background:var(--red-bg);
+  border:1px solid rgba(202,53,33,.25);border-radius:6px;
+  color:var(--red);font-size:13px;margin-bottom:14px}
+
+/* NEW TICKET BTN */
+.btn-new{margin-top:20px;padding:10px 24px;background:transparent;color:var(--blue);
+  border:2px solid var(--blue);border-radius:6px;font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-new:hover{background:var(--blue-light)}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
+footer a{color:var(--blue);text-decoration:none}
+
+/* MOBILE */
+@media(max-width:480px){
+  main{padding:24px 12px 48px}
+  .card{padding:20px}
+  .type-grid{grid-template-columns:1fr 1fr}
+  .field-row{grid-template-columns:1fr}
+  .hero h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <div class="logo-box">EP</div>
+    <div>
+      <div class="logo-name">Edge Platform</div>
+    </div>
+  </div>
+  <div class="header-sub">Support Portal</div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="hero">
+      <h1>Raise a Support Ticket</h1>
+      <p>Describe your issue and we'll get back to you as soon as possible.<br>Tickets go directly to our support team.</p>
+    </div>
+
+    <div class="card">
+
+      <!-- FORM -->
+      <div id="form-state">
+        <!-- Issue type -->
+        <div class="step-label">Issue Type</div>
+        <div class="type-grid" id="type-grid">
+          <div class="type-card selected" data-type="incident" onclick="selectType(this)">
+            <div class="type-icon">🔴</div>
+            <div class="type-name">Incident</div>
+            <div class="type-desc">Service is down or severely degraded</div>
+          </div>
+          <div class="type-card" data-type="degraded" onclick="selectType(this)">
+            <div class="type-icon">🟡</div>
+            <div class="type-name">Performance</div>
+            <div class="type-desc">Slowness or partial functionality</div>
+          </div>
+          <div class="type-card" data-type="question" onclick="selectType(this)">
+            <div class="type-icon">🔵</div>
+            <div class="type-name">Question</div>
+            <div class="type-desc">How-to or configuration help</div>
+          </div>
+          <div class="type-card" data-type="feature" onclick="selectType(this)">
+            <div class="type-icon">🟢</div>
+            <div class="type-name">Feature Request</div>
+            <div class="type-desc">Suggest an improvement</div>
+          </div>
+          <div class="type-card" data-type="billing" onclick="selectType(this)">
+            <div class="type-icon">🟣</div>
+            <div class="type-name">Billing</div>
+            <div class="type-desc">Invoice or payment issue</div>
+          </div>
+          <div class="type-card" data-type="other" onclick="selectType(this)">
+            <div class="type-icon">⚪</div>
+            <div class="type-name">Other</div>
+            <div class="type-desc">Something else entirely</div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="step-label">Your Details</div>
+        <div class="field-row" style="margin-bottom:18px">
+          <div class="field" style="margin:0">
+            <label>Your Name <span class="required">*</span></label>
+            <input type="text" id="f-name" placeholder="e.g. John Smith"/>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Your Email <span class="required">*</span></label>
+            <input type="email" id="f-email" placeholder="you@example.com"/>
+          </div>
+        </div>
+
+        <!-- Issue -->
+        <div class="step-label">Issue Details</div>
+        <div class="field">
+          <label>Title <span class="required">*</span></label>
+          <input type="text" id="f-title" placeholder="Brief summary of the issue"/>
+        </div>
+        <div class="field">
+          <label>Description <span class="required">*</span></label>
+          <textarea id="f-desc" placeholder="Describe the issue in detail. Include steps to reproduce, any error messages, and what you expected to happen."></textarea>
+        </div>
+        <div class="field">
+            <label>Priority</label>
+            <select id="f-priority" onchange="updateSLA()">
+              <option>Critical</option><option selected>High</option>
+              <option>Medium</option><option>Low</option>
+            </select>
+          </div>
+
+        <div style="margin-top:18px;margin-bottom:20px">
+          <label style="margin-bottom:6px;display:block">Attachment <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+          <div class="attach-zone" id="attach-zone" onclick="document.getElementById('f-attach').click()">
+            📎 Click to attach a screenshot or file
+          </div>
+          <input type="file" id="f-attach" style="display:none" onchange="onFileChange(this)"/>
+        </div>
+
+        <div class="sla-hint" id="sla-hint">
+          ⏱ Expected response time for <strong id="sla-priority">High</strong> priority: <strong id="sla-time">4 hours</strong>
+        </div>
+
+        <div id="error-msg"></div>
+
+        <button class="btn-submit" id="submit-btn" onclick="submitTicket()">
+          Submit Ticket →
+        </button>
+      </div>
+
+      <!-- SENDING -->
+      <div id="sending-state">
+        <div class="spinner"></div>
+        <p style="color:var(--sub);font-size:14px">Submitting your ticket…</p>
+      </div>
+
+      <!-- SUCCESS -->
+      <div id="success-state">
+        <div class="success-icon">✅</div>
+        <h2>Ticket Raised!</h2>
+        <p>Your request has been received.<br>We'll respond to <strong id="success-email"></strong> as soon as possible.</p>
+        <div class="ticket-ref" id="ticket-ref"></div>
+        <br>
+        <button class="btn-new" onclick="resetForm()">+ Raise Another Ticket</button>
+      </div>
+
+    </div><!-- /card -->
+  </div>
+</main>
+
+<footer>
+  Powered by <a href="#">Edge Platform</a> · Support Portal
+</footer>
+
+<script>
+// ── Airtable config ───────────────────────────────
+const AT_TOKEN = 'patXjeY3wodEIvZso.816873006255900f92aa1e32df4f5d5cd432f8f38c30746255306032e15cf728';
+const AT_BASE  = 'app6eSVRvm1wMFMq9';
+const AT_TABLE = 'Table%201';
+
+async function saveToAirtable(fields){
+  try {
+    await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ records: [{ fields }] })
+    });
+  } catch(e) { console.error('Airtable error:', e); }
+}
+
+// ── EmailJS ──────────────────────────────────────
+const EJS_PUBLIC_KEY  = '99J3R317qOIGxAN-T';
+const EJS_SERVICE_ID  = 'raseldd@hotmail.com';
+const EJS_TEMPLATE_ID = 'template_ihku94w';
+const RECIPIENT_EMAIL = 'raseldd@hotmail.com';
+
+emailjs.init({ publicKey: EJS_PUBLIC_KEY });
+
+// ── State ─────────────────────────────────────────
+let selectedType = 'incident';
+let attachedFile  = '';
+let ticketCounter = Math.floor(1050 + Math.random() * 50);
+
+const SLA = { Critical:'1 hour', High:'4 hours', Medium:'1 business day', Low:'3 business days' };
+
+function selectType(el){
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = el.dataset.type;
+}
+
+function updateSLA(){
+  const p = document.getElementById('f-priority').value;
+  document.getElementById('sla-priority').textContent = p;
+  document.getElementById('sla-time').textContent = SLA[p];
+}
+
+function onFileChange(input){
+  const zone = document.getElementById('attach-zone');
+  if(input.files && input.files[0]){
+    attachedFile = input.files[0].name;
+    zone.textContent = '📎 ' + attachedFile + '  ✕ remove';
+    zone.classList.add('has-file');
+    zone.onclick = () => { input.value=''; attachedFile=''; zone.textContent='📎 Click to attach a screenshot or file'; zone.classList.remove('has-file'); zone.onclick=()=>input.click(); };
+  }
+}
+
+function submitTicket(){
+  const name     = document.getElementById('f-name').value.trim();
+  const email    = document.getElementById('f-email').value.trim();
+  const title    = document.getElementById('f-title').value.trim();
+  const desc     = document.getElementById('f-desc').value.trim();
+  const priority = document.getElementById('f-priority').value;
+  const errBox   = document.getElementById('error-msg');
+
+  // Validate
+  if(!name || !email || !title || !desc){
+    errBox.style.display='block';
+    errBox.textContent='⚠ Please fill in all required fields (Name, Email, Title, Description).';
+    return;
+  }
+  if(!/\S+@\S+\.\S+/.test(email)){
+    errBox.style.display='block';
+    errBox.textContent='⚠ Please enter a valid email address.';
+    return;
+  }
+  errBox.style.display='none';
+
+  const ticketId = 'AT-' + (++ticketCounter);
+  const typeLabel = {incident:'Incident',degraded:'Performance',question:'Question',feature:'Feature Request',billing:'Billing',other:'Other'}[selectedType];
+
+  // Show sending
+  document.getElementById('form-state').style.display='none';
+  document.getElementById('sending-state').style.display='block';
+
+  emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+    to_email:    RECIPIENT_EMAIL,
+    ticket_id:   ticketId,
+    ticket_type: typeLabel,
+    name:        name,
+    from_email:  email,
+    title:       title,
+    description: desc,
+    priority:    priority,
+    sla:         SLA[priority],
+    submitted_at:new Date().toLocaleString('en-GB'),
+    attachment:  attachedFile || 'None',
+    ticket_url:  `https://inquisitive-cendol-a89c7c.netlify.app/#ticket-${ticketId}`,
+    message:     `${typeLabel} ticket from ${name} (${email})\n\nTitle: ${title}\n\nDescription:\n${desc}\n\nPriority: ${priority}`,
+  }).then(async () => {
+    // Save to Airtable
+    await saveToAirtable({
+      TicketsID:   ticketId,
+      Type:        typeLabel,
+      Title:       title,
+      Description: desc,
+      Priority:    priority,
+      Name:        name,
+      Email:       email,
+      Status:      'Open',
+      Submitted:   new Date().toLocaleString('en-GB'),
+    });
+    document.getElementById('sending-state').style.display='none';
+    document.getElementById('success-state').style.display='block';
+    document.getElementById('success-email').textContent = email;
+    document.getElementById('ticket-ref').textContent = 'Ticket ID: ' + ticketId;
+  }).catch(err => {
+    console.error(err);
+    document.getElementById('sending-state').style.display='none';
+    document.getElementById('form-state').style.display='block';
+    errBox.style.display='block';
+    errBox.textContent='⚠ Could not send ticket — please try again or email raseldd@hotmail.com directly.';
+  });
+}
+
+function resetForm(){
+  document.getElementById('success-state').style.display='none';
+  document.getElementById('form-state').style.display='block';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-attach').value='';
+  document.getElementById('attach-zone').textContent='📎 Click to attach a screenshot or file';
+  document.getElementById('attach-zone').classList.remove('has-file');
+  attachedFile='';
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector('[data-type="incident"]').classList.add('selected');
+  selectedType='incident';
+  updateSLA();
+}
+</script>
+</body>
+</html>
