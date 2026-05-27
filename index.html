@@ -643,7 +643,10 @@ async function fetchAirtableTickets(){
       headers: { 'Authorization': `Bearer ${AT_TOKEN}` }
     });
     const data = await res.json();
-    console.log('Airtable response:', data);
+    console.log('Airtable response:', JSON.stringify(data).slice(0,500));
+    if(data.records && data.records.length > 0){
+      console.log('First record raw:', JSON.stringify(data.records[0]));
+    }
     if(!data.records){
       console.error('No records found. Error:', data);
       if(refreshBtn) refreshBtn.textContent = '↻ Refresh';
@@ -1553,11 +1556,25 @@ function renderTicketDetail(){
   const v=document.getElementById('support-detail-view');
   v.innerHTML=`
     <div class="page-header">
-      <button class="btn btn-subtle btn-sm" style="margin-bottom:12px;padding-left:0" onclick="ticketFilter='all';ticketSearch='';renderSupportList()">‹ Back to tickets</button>
-      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-family:monospace;font-size:12px;color:var(--text-sub)">${t.id}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <button class="btn btn-subtle btn-sm" style="padding-left:0" onclick="ticketFilter='all';ticketSearch='';renderSupportList()">‹ Back to tickets</button>
+        <div style="display:flex;gap:8px">
+          <select onchange="updateTicketStatus('${t.id}','${t.airtableId||''}',this.value)" 
+            style="font-size:12px;padding:5px 10px;border-radius:4px;border:1px solid var(--border);cursor:pointer">
+            <option value="open" ${t.status==='open'?'selected':''}>To Do</option>
+            <option value="in-progress" ${t.status==='in-progress'?'selected':''}>In Progress</option>
+            <option value="resolved" ${t.status==='resolved'?'selected':''}>Resolved</option>
+            <option value="closed" ${t.status==='closed'?'selected':''}>Closed</option>
+          </select>
+          <button class="btn btn-danger btn-sm" onclick="deleteTicket('${t.id}')">🗑 Delete</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-family:monospace;font-size:12px;color:var(--text-sub);background:var(--bg);padding:3px 8px;border-radius:4px;border:1px solid var(--border)">${t.id}</span>
         <span class="loz ${tt?.loz||'loz-grey'}">${tt?.label||t.type}</span>
         <span class="loz ${st.loz}">${st.label}</span>
+        ${t.priority?`<span class="loz loz-grey">${t.priority}</span>`:''}
+        ${t.fromEmail?`<span style="font-size:12px;color:var(--text-sub)">✉ ${t.fromName||''} &lt;${t.fromEmail}&gt;</span>`:''}
       </div>
       <h1 style="font-size:20px">${t.title}</h1>
     </div>
@@ -1669,6 +1686,31 @@ window.addEventListener('DOMContentLoaded', function(){
     }, 600);
   });
 });
+
+function updateTicketStatus(id, airtableId, newStatus){
+  const t = allTickets.find(x=>x.id===id);
+  if(t){
+    t.status = newStatus;
+    renderTicketDetail();
+    // Update in Airtable
+    if(airtableId){
+      const statusLabel = {open:'Open','in-progress':'In Progress',resolved:'Resolved',closed:'Closed'}[newStatus]||newStatus;
+      fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}/${airtableId}`,{
+        method:'PATCH',
+        headers:{'Authorization':`Bearer ${AT_TOKEN}`,'Content-Type':'application/json'},
+        body:JSON.stringify({fields:{Status:statusLabel}})
+      }).then(()=>console.log('Status updated in Airtable'));
+    }
+  }
+}
+
+function deleteTicket(id){
+  if(!confirm('Delete this ticket?')) return;
+  allTickets = allTickets.filter(t=>t.id!==id);
+  updateBadge();
+  ticketFilter='all';ticketSearch='';
+  renderSupportList();
+}
 </script>
 </body>
 </html>
