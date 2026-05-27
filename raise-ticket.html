@@ -369,14 +369,13 @@ function submitTicket(){
   }).then(async () => {
     // Save to Airtable
     await saveToAirtable({
+      Name:        name,
       TicketsID:   ticketId,
       Type:        typeLabel,
       Title:       title,
       Description: desc,
       Priority:    priority,
-      Name:        name,
       Email:       email,
-      Status:      'Open',
       Submitted:   new Date().toLocaleString('en-GB'),
     });
     document.getElementById('sending-state').style.display='none';

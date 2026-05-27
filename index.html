@@ -654,20 +654,20 @@ async function fetchAirtableTickets(){
       const f = r.fields;
       console.log('Record fields:', f);
       // Use TicketsID if present, otherwise fall back to Airtable record ID
-      const ticketId = f.TicketsID || f['Ticket ID'] || f.TicketID || ('AIR-' + r.id.slice(-6));
+      const ticketId = f.TicketsID || ('AIR-' + r.id.slice(-6));
       const exists = allTickets.find(t => t.id === ticketId || t.airtableId === r.id);
       if(!exists){
         allTickets.unshift({
           id:         ticketId,
-          type:       typeIdFromLabel(f.Type || f.type || ''),
-          title:      f.Title || f.title || f.Name || f.name || '(no title)',
-          priority:   f.Priority || f.priority || 'Medium',
-          status:     statusIdFromLabel(f.Status || f.status || 'Open'),
+          type:       typeIdFromLabel(f.Type || ''),
+          title:      f.Title || f.Name || '(no title)',
+          priority:   f.Priority || 'Medium',
+          status:     'open',
           product:    '—',
-          created:    f.Submitted || f.submitted || new Date().toLocaleDateString('en-GB'),
-          updated:    f.Submitted || f.submitted || 'just now',
+          created:    f.Submitted || new Date().toLocaleDateString('en-GB'),
+          updated:    f.Submitted || 'just now',
           assignee:   'Unassigned',
-          messages:   f.Description ? [{from:'User', text: f.Description, time: f.Submitted||'', isAgent:false}] : [],
+          messages:   f.Description ? [{from: f.Name||'User', text: f.Description, time: f.Submitted||'just now', isAgent:false}] : [],
           airtableId: r.id,
           fromEmail:  f.Email || '',
           fromName:   f.Name || '',
