@@ -1290,34 +1290,48 @@ function renderSupportList(){
     </div>
 
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
-      ${filtered.length===0?`<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">No tickets found</div></div>`:''}
-      ${filtered.map(t=>{
-        const tt=TICKET_TYPES.find(x=>x.id===t.type);
-        const st=TICKET_STATUS[t.status]||{label:t.status,loz:'loz-grey'};
-        const priColor={Critical:C.red,High:C.amber,Medium:C.blue,Low:C.sub};
-        return `<div class="ticket-row" onclick="openTicket('${t.id}')">
-          <span class="ticket-icon">${tt?.icon||'📋'}</span>
-          <div class="ticket-main">
-            <div class="ticket-title">${t.title}</div>
-            <div class="ticket-meta">
-              <span class="ticket-id">${t.id}</span>
-              <span class="loz ${tt?.loz||'loz-grey'}" style="font-size:9px;padding:1px 5px">${tt?.label||t.type}</span>
-              <span class="tag" style="font-size:10px">${t.product}</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;flex-shrink:0">
-            <div style="text-align:right">
-              <span class="loz ${st.loz}">${st.label}</span>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${t.updated}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:12px;color:var(--text-sub)">${t.assignee}</div>
-              ${t.messages.length>0?`<div style="font-size:11px;color:var(--blue)">💬 ${t.messages.length}</div>`:''}
-            </div>
-            <span style="color:var(--text-muted)">›</span>
-          </div>
-        </div>`;
-      }).join('')}
+      ${filtered.length===0?`<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">No tickets found</div></div>`:`
+      <table class="jira-table" style="font-size:13px">
+        <thead>
+          <tr>
+            <th style="width:32px"></th>
+            <th>Request Type</th>
+            <th>Key</th>
+            <th>Summary</th>
+            <th>Reporter</th>
+            <th>Assignee</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(t=>{
+            const tt=TICKET_TYPES.find(x=>x.id===t.type);
+            const st=TICKET_STATUS[t.status]||{label:t.status,loz:'loz-grey'};
+            const priIcon={Critical:'🔴',High:'🟠',Medium:'🟡',Low:'🔵'}[t.priority]||'⚪';
+            return `<tr onclick="openTicket('${t.id}')" style="cursor:pointer">
+              <td style="text-align:center;font-size:16px">${tt?.icon||'📋'}</td>
+              <td><span class="loz ${tt?.loz||'loz-grey'}" style="font-size:10px">${tt?.label||t.type}</span></td>
+              <td><span style="font-family:monospace;font-size:12px;color:var(--blue);font-weight:600">${t.id}</span></td>
+              <td style="max-width:280px">
+                <div style="font-weight:500;color:var(--text)">${t.title}</div>
+                ${t.fromName?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${t.fromName}</div>`:''}
+              </td>
+              <td style="font-size:12px;color:var(--text-sub)">
+                ${t.fromName?`<div style="display:flex;align-items:center;gap:6px">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${(t.fromName||'?')[0].toUpperCase()}</div>
+                  ${t.fromName}
+                </div>`:'<span style="color:var(--text-muted)">—</span>'}
+              </td>
+              <td style="font-size:12px;color:var(--text-sub)">${t.assignee||'Unassigned'}</td>
+              <td><span class="loz ${st.loz}">${st.label}</span></td>
+              <td style="font-size:13px">${priIcon} ${t.priority||'—'}</td>
+              <td style="font-size:11px;color:var(--text-muted);white-space:nowrap">${t.created||t.updated||'—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`}
     </div>
 
     <div style="font-size:12px;font-weight:600;color:var(--text-sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>

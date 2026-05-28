@@ -276,7 +276,8 @@ const AT_TABLE = 'Table%201';
 
 async function saveToAirtable(fields){
   try {
-    await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`, {
+    console.log('Saving to Airtable:', JSON.stringify(fields));
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/Table%201`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${AT_TOKEN}`,
@@ -284,7 +285,10 @@ async function saveToAirtable(fields){
       },
       body: JSON.stringify({ records: [{ fields }] })
     });
-  } catch(e) { console.error('Airtable error:', e); }
+    const data = await res.json();
+    console.log('Airtable save response:', JSON.stringify(data));
+    if(data.error) console.error('Airtable save error:', data.error);
+  } catch(e) { console.error('Airtable save exception:', e); }
 }
 
 // ── EmailJS ──────────────────────────────────────
