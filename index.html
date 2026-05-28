@@ -85,15 +85,18 @@ body{
 #sidebar.collapsed{width:52px}
 #sidebar.collapsed .sidebar-name,
 #sidebar.collapsed .sidebar-sub,
-#sidebar.collapsed .nav-item span:not(.nav-icon),
+#sidebar.collapsed .nav-label,
+#sidebar.collapsed .sidebar-name,
+#sidebar.collapsed .sidebar-sub,
 #sidebar.collapsed .sidebar-section,
 #sidebar.collapsed .nav-badge,
-#sidebar.collapsed .sidebar-user>div{display:none}
-#sidebar.collapsed .nav-item{justify-content:center;padding:8px;margin:2px 4px;border-left:none;border-radius:6px}
-#sidebar.collapsed .nav-item.active{background:var(--nav-active)}
-#sidebar.collapsed .sidebar-top{justify-content:center;padding:0 12px}
+#sidebar.collapsed .sidebar-user>div{display:none!important}
+#sidebar.collapsed .nav-item{justify-content:center;padding:10px 8px;margin:2px 4px;border-left:3px solid transparent;border-radius:6px}
+#sidebar.collapsed .nav-item.active{background:var(--nav-active);border-left-color:var(--nav-active-border)}
+#sidebar.collapsed .sidebar-top{justify-content:center;padding:0 8px}
 #sidebar.collapsed .sidebar-user{justify-content:center;padding:8px}
-#sidebar.collapsed .nav-icon{width:auto;font-size:18px}
+#sidebar.collapsed .nav-icon{width:auto;font-size:20px;margin:0}
+#sidebar.collapsed #collapse-btn{left:52px!important}
 #collapse-btn{position:absolute;top:60px;left:var(--sidebar-w);transform:translateX(-50%);
   width:22px;height:22px;background:var(--surface);border:1px solid var(--border);
   border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -461,20 +464,20 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 
   <div class="sidebar-section">Platform</div>
   <div class="nav-item active" data-tab="arch" onclick="switchTab('arch',this)">
-    <span class="nav-icon">⬡</span> Architecture
+    <span class="nav-icon">⬡</span><span class="nav-label"> Architecture</span>
   </div>
   <div class="nav-item" data-tab="dash" onclick="switchTab('dash',this)">
-    <span class="nav-icon">▤</span> Dashboard
+    <span class="nav-icon">▤</span><span class="nav-label"> Dashboard</span>
   </div>
 
   <div class="sidebar-section">Engineering</div>
   <div class="nav-item" data-tab="learn" onclick="switchTab('learn',this)">
-    <span class="nav-icon">◈</span> Deep Dive
+    <span class="nav-icon">◈</span><span class="nav-label"> Deep Dive</span>
   </div>
 
   <div class="sidebar-section">Support</div>
   <div class="nav-item" data-tab="support" onclick="switchTab('support',this)">
-    <span class="nav-icon">◉</span> My Tickets
+    <span class="nav-icon">◉</span><span class="nav-label"> My Tickets</span>
     <span class="nav-badge" id="open-badge">3</span>
   </div>
 
@@ -1272,24 +1275,7 @@ function updateBadge(){
 }
 
 
-function buildColumnPicker(){
-  const cols=[
-    ['requestType','Request Type'],['key','Key'],['summary','Summary'],
-    ['reporter','Reporter'],['assignee','Assignee'],['status','Status'],
-    ['priority','Priority'],['created','Created']
-  ];
-  return cols.map(([c,label])=>`
-    <label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer">
-      <input type="checkbox" ${visibleCols.includes(c)?'checked':''} onchange="toggleCol('${c}',this.checked)" style="width:14px;height:14px"/>
-      ${label}
-    </label>`).join('');
-}
 
-function buildTableHeaders(){
-  const map={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',
-    assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
-  return visibleCols.map(c=>`<th>${map[c]||c}</th>`).join('');
-}
 
 function buildTicketRow(t,tt,st,priIcon,isSelected){
   let cells='';
@@ -1309,109 +1295,112 @@ function renderSupportList(){
   document.getElementById('support-detail-view').style.display='none';
   updateBadge();
 
-  const filtered=allTickets.filter(t=>{
-    const mf=ticketFilter==='all'||t.status===ticketFilter;
-    const ms=!ticketSearch||t.title.toLowerCase().includes(ticketSearch.toLowerCase())||t.id.toLowerCase().includes(ticketSearch.toLowerCase());
+  var filtered=allTickets.filter(function(t){
+    var mf=ticketFilter==='all'||t.status===ticketFilter;
+    var ms=!ticketSearch||t.title.toLowerCase().includes(ticketSearch.toLowerCase())||t.id.toLowerCase().includes(ticketSearch.toLowerCase());
     return mf&&ms;
   });
 
-  const open=allTickets.filter(t=>t.status==='open').length;
-  const inprog=allTickets.filter(t=>t.status==='in-progress').length;
-  const resolved=allTickets.filter(t=>t.status==='resolved').length;
+  var open=allTickets.filter(function(t){return t.status==='open';}).length;
+  var inprog=allTickets.filter(function(t){return t.status==='in-progress';}).length;
+  var resolved=allTickets.filter(function(t){return t.status==='resolved';}).length;
 
-  document.getElementById('support-list-view').innerHTML=`
-    <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
-      <div>
-        <h1>My Tickets</h1>
-        <p>Track and manage your support requests</p>
-      </div>
-      <div style="display:flex;gap:8px"><button class="btn btn-default btn-sm" onclick="fetchAirtableTickets()" title="Refresh from Airtable">↻ Refresh</button><button class="btn btn-primary" onclick="showNewTicket()">+ Raise ticket</button></div>
-    </div>
+  var colLabels={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
+  var pickerHTML='';
+  Object.keys(colLabels).forEach(function(c){
+    pickerHTML+='<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" '+(visibleCols.includes(c)?'checked':'')+' onchange="toggleCol(''+c+'',this.checked)" style="width:14px;height:14px"> '+colLabels[c]+'</label>';
+  });
 
-    <div class="stats-grid" style="margin-bottom:24px">
-      ${[{l:"Open",v:open,c:C.blue},{l:"In Progress",v:inprog,c:C.amber},{l:"Resolved",v:resolved,c:C.green},{l:"Total",v:allTickets.length,c:C.sub}].map(s=>`
-      <div class="stat-card"><div class="stat-value" style="color:${s.c}">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('')}
-    </div>
+  var bulkHTML='';
+  if(selectedTickets.length>0){
+    bulkHTML='<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--blue-light);border:1px solid rgba(12,102,228,.2);border-radius:6px;margin-bottom:12px">'+
+      '<span style="font-size:13px;font-weight:500;color:var(--blue)">'+selectedTickets.length+' selected</span>'+
+      '<button class="btn btn-default btn-sm" onclick="bulkUpdateStatus('in-progress')">▶ In Progress</button>'+
+      '<button class="btn btn-default btn-sm" onclick="bulkUpdateStatus('resolved')">✓ Resolve</button>'+
+      '<button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑 Delete</button>'+
+      '<button class="btn btn-subtle btn-sm" onclick="selectedTickets=[];renderSupportList()">✕ Clear</button>'+
+    '</div>';
+  }
 
-    <div class="filter-bar">
-      <div class="search-wrap" style="max-width:280px">
-        <span class="search-icon">⌕</span>
-        <input type="text" placeholder="Search tickets…" value="${ticketSearch}" oninput="ticketSearch=this.value;renderSupportList()"/>
-      </div>
-      ${["all","open","in-progress","resolved"].map(f=>`<div class="filter-chip${ticketFilter===f?' active':''}" onclick="ticketFilter='${f}';renderSupportList()">${f==='all'?'All tickets':f.replace('-',' ')}</div>`).join('')}
-      <div style="margin-left:auto;position:relative">
-        <button class="btn btn-default btn-sm" onclick="toggleColumnPicker()" style="display:flex;align-items:center;gap:5px">
-          ⚙ Columns <span style="font-size:10px">▾</span>
-        </button>
-        <div id="column-picker" style="display:none;position:absolute;right:0;top:32px;background:var(--surface);
-          border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;
-          box-shadow:var(--shadow-md);z-index:100">
-          ${buildColumnPicker()}
-        </div>
-      </div>
-    </div>
-    ${selectedTickets.length>0?`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--blue-light);
-      border:1px solid rgba(12,102,228,.2);border-radius:6px;margin-bottom:12px">
-      <span style="font-size:13px;font-weight:500;color:var(--blue)">${selectedTickets.length} ticket${selectedTickets.length>1?'s':''} selected</span>
-      <button class="btn btn-default btn-sm" onclick="bulkUpdateStatus('in-progress')">▶ In Progress</button>
-      <button class="btn btn-default btn-sm" onclick="bulkUpdateStatus('resolved')">✓ Resolve</button>
-      <button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑 Delete</button>
-      <button class="btn btn-subtle btn-sm" onclick="selectedTickets=[];renderSupportList()">✕ Clear</button>
-    </div>`:''}
+  var theadHTML='<th style="width:36px;padding:8px"><input type="checkbox" style="width:14px;height:14px;cursor:pointer" onchange="toggleAllTickets(this.checked)"></th>';
+  if(visibleCols.includes('requestType')) theadHTML+='<th>Request Type</th>';
+  if(visibleCols.includes('key')) theadHTML+='<th>Key</th>';
+  if(visibleCols.includes('summary')) theadHTML+='<th>Summary</th>';
+  if(visibleCols.includes('reporter')) theadHTML+='<th>Reporter</th>';
+  if(visibleCols.includes('assignee')) theadHTML+='<th>Assignee</th>';
+  if(visibleCols.includes('status')) theadHTML+='<th>Status</th>';
+  if(visibleCols.includes('priority')) theadHTML+='<th>Priority</th>';
+  if(visibleCols.includes('created')) theadHTML+='<th>Created</th>';
+  theadHTML+='<th style="width:40px"></th>';
 
-    <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
-      ${filtered.length===0?`<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">No tickets found</div></div>`:`
-      <table class="jira-table" style="font-size:13px">
-        <thead>
-          <tr>
-            <th style="width:36px;padding:8px">
-              <input type="checkbox" style="width:14px;height:14px;cursor:pointer" 
-                onchange="toggleAllTickets(this.checked)" title="Select all"/>
-            </th>
-            ${buildTableHeaders()}
-            <th style="width:40px"></th>
-          </tr>
-        </thead>
-        <tbody>
-          ${filtered.map(t=>{
-            const tt=TICKET_TYPES.find(x=>x.id===t.type);
-            const st=TICKET_STATUS[t.status]||{label:t.status,loz:'loz-grey'};
-            const priIcon={Critical:'🔴',High:'🟠',Medium:'🟡',Low:'🔵'}[t.priority]||'⚪';
-            const isSelected=selectedTickets.includes(t.id);
-            return `<tr style="background:${isSelected?'var(--blue-light)':''}">
-              <td style="padding:8px" onclick="event.stopPropagation()">
-                <input type="checkbox" ${isSelected?'checked':''} style="width:14px;height:14px;cursor:pointer"
-                  onchange="toggleTicketSelect('${t.id}',this.checked)"/>
-              </td>
-              ${buildTicketRow(t,tt,st,priIcon,isSelected)}
-              <td onclick="event.stopPropagation()">
-                <button onclick="deleteTicket('${t.id}')" style="background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px" title="Delete">🗑</button>
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>`}
-    </div>
+  var tbodyHTML='';
+  if(filtered.length===0){
+    tbodyHTML='<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">No tickets found</div></div></td></tr>';
+  } else {
+    filtered.forEach(function(t){
+      var tt=TICKET_TYPES.find(function(x){return x.id===t.type;});
+      var st=TICKET_STATUS[t.status]||{label:t.status,loz:'loz-grey'};
+      var priIcon={Critical:'🔴',High:'🟠',Medium:'🟡',Low:'🔵'}[t.priority]||'⚪';
+      var isSelected=selectedTickets.includes(t.id);
+      var row='<tr style="'+(isSelected?'background:var(--blue-light)':'')+'">';
+      row+='<td style="padding:8px" onclick="event.stopPropagation()"><input type="checkbox" '+(isSelected?'checked':'')+' style="width:14px;height:14px;cursor:pointer" onchange="toggleTicketSelect(''+t.id+'',this.checked)"></td>';
+      if(visibleCols.includes('requestType')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer"><span style="font-size:16px">'+(tt?tt.icon:'📋')+'</span> <span class="loz '+(tt?tt.loz:'loz-grey')+'" style="font-size:10px">'+(tt?tt.label:t.type)+'</span></td>';
+      if(visibleCols.includes('key')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer"><span style="font-family:monospace;font-size:12px;color:var(--blue);font-weight:600">'+t.id+'</span></td>';
+      if(visibleCols.includes('summary')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer;max-width:260px"><div style="font-weight:500;color:var(--text)">'+t.title+'</div>'+(t.fromName?'<div style="font-size:11px;color:var(--text-muted)">'+t.fromName+'</div>':'')+'</td>';
+      if(visibleCols.includes('reporter')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">'+(t.fromName?'<div style="display:flex;align-items:center;gap:5px"><div style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">'+t.fromName[0].toUpperCase()+'</div>'+t.fromName+'</div>':'—')+'</td>';
+      if(visibleCols.includes('assignee')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">'+(t.assignee||'Unassigned')+'</td>';
+      if(visibleCols.includes('status')) row+='<td onclick="event.stopPropagation()"><select class="loz '+st.loz+'" style="border:none;background:transparent;cursor:pointer;font-size:11px;font-weight:600;padding:2px 4px;border-radius:3px" onchange="quickUpdateStatus(''+t.id+'',''+(t.airtableId||'')+'',this.value)"><option value="open" '+(t.status==='open'?'selected':'')+'>TO DO</option><option value="in-progress" '+(t.status==='in-progress'?'selected':'')+'>IN PROGRESS</option><option value="resolved" '+(t.status==='resolved'?'selected':'')+'>DONE</option><option value="closed" '+(t.status==='closed'?'selected':'')+'>CLOSED</option></select></td>';
+      if(visibleCols.includes('priority')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer;font-size:13px">'+priIcon+' '+(t.priority||'—')+'</td>';
+      if(visibleCols.includes('created')) row+='<td onclick="openTicket(''+t.id+'')" style="cursor:pointer;font-size:11px;color:var(--text-muted);white-space:nowrap">'+(t.created||t.updated||'—')+'</td>';
+      row+='<td onclick="event.stopPropagation()"><button onclick="deleteTicket(''+t.id+'')" style="background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px">🗑</button></td>';
+      row+='</tr>';
+      tbodyHTML+=row;
+    });
+  }
 
-    <div style="font-size:12px;font-weight:600;color:var(--text-sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>
-    <div class="card" style="padding:0 16px">
-      ${[
-        {id:"AT-1041",event:"Status changed to In Progress",time:"2h ago",actor:"Maya R."},
-        {id:"AT-1041",event:"Agent replied",time:"2h ago",actor:"Maya R."},
-        {id:"AT-1038",event:"Ticket opened",time:"5h ago",actor:"You"},
-        {id:"AT-1031",event:"Marked as Done",time:"1d ago",actor:"Sam K."},
-        {id:"AT-1019",event:"Agent replied",time:"6d ago",actor:"Billing T."},
-      ].map(a=>`
-      <div class="activity-item">
-        <span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span>
-        <span style="font-size:11px;color:var(--text-sub);min-width:70px;font-family:monospace">${a.id}</span>
-        <span style="flex:1;color:var(--text-sub)">${a.event}</span>
-        <span style="color:var(--text-muted)">${a.actor}</span>
-        <span style="color:var(--text-muted);font-size:11px">${a.time}</span>
-      </div>`).join('')}
-    </div>
-  `;
+  var actHTML='';
+  [{id:"AT-1041",event:"Status changed to In Progress",time:"2h ago",actor:"Maya R."},{id:"AT-1038",event:"Ticket opened",time:"5h ago",actor:"You"},{id:"AT-1031",event:"Marked as Done",time:"1d ago",actor:"Sam K."}].forEach(function(a){
+    actHTML+='<div class="activity-item"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--text-sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--text-sub)">'+a.event+'</span><span style="color:var(--text-muted)">'+a.actor+'</span><span style="color:var(--text-muted);font-size:11px">'+a.time+'</span></div>';
+  });
+
+  document.getElementById('support-list-view').innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px">'+
+      '<div><div class="accent-label">CUSTOMER SUPPORT</div>'+
+      '<h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1>'+
+      '<p style="color:var(--text-sub);font-size:14px">Track and manage your support requests</p></div>'+
+      '<div style="display:flex;gap:8px">'+
+        '<button class="btn btn-default btn-sm" onclick="fetchAirtableTickets()">↻ Refresh</button>'+
+        '<button class="btn btn-primary" onclick="showNewTicket()">+ Raise ticket</button>'+
+      '</div></div>'+
+    '<div class="stats-grid" style="margin-bottom:24px">'+
+      '<div class="stat-card"><div class="stat-value" style="color:var(--blue)">'+open+'</div><div class="stat-label">Open</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:var(--amber)">'+inprog+'</div><div class="stat-label">In Progress</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:var(--green)">'+resolved+'</div><div class="stat-label">Resolved</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:var(--sub)">'+allTickets.length+'</div><div class="stat-label">Total</div></div>'+
+    '</div>'+
+    '<div class="filter-bar">'+
+      '<div class="search-wrap" style="max-width:280px"><span class="search-icon">⌕</span>'+
+      '<input type="text" placeholder="Search tickets..." value="'+ticketSearch+'" oninput="ticketSearch=this.value;renderSupportList()"></div>'+
+      (function(){
+        var chips='';
+        ['all','open','in-progress','resolved'].forEach(function(f){
+          var label=f==='all'?'All tickets':f.replace('-',' ');
+          var active=ticketFilter===f?' active':'';
+          chips+='<div class="filter-chip'+active+'" onclick="ticketFilter=\''+f+'\';renderSupportList()">'+label+'</div>';
+        });
+        return chips;
+      })()+
+      '<div style="margin-left:auto;position:relative">'+
+        '<button class="btn btn-default btn-sm" onclick="toggleColumnPicker()">⚙ Columns ▾</button>'+
+        '<div id="column-picker" style="display:none;position:absolute;right:0;top:36px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;box-shadow:var(--shadow-md);z-index:100">'+pickerHTML+'</div>'+
+      '</div>'+
+    '</div>'+
+    bulkHTML+
+    '<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">'+
+      '<table class="jira-table" style="font-size:13px"><thead><tr>'+theadHTML+'</tr></thead><tbody>'+tbodyHTML+'</tbody></table>'+
+    '</div>'+
+    '<div style="font-size:12px;font-weight:600;color:var(--text-sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>'+
+    '<div class="card" style="padding:0 16px">'+actHTML+'</div>';
 }
 
 function showNewTicket(){
@@ -1788,11 +1777,11 @@ function deleteTicket(id){
 
 function toggleSidebarCollapse(){
   sidebarCollapsed=!sidebarCollapsed;
-  const sb=document.getElementById('sidebar');
-  const btn=document.getElementById('collapse-btn');
+  var sb=document.getElementById('sidebar');
+  var btn=document.getElementById('collapse-btn');
   sb.classList.toggle('collapsed',sidebarCollapsed);
-  btn.textContent=sidebarCollapsed?'▶':'◀';
-  btn.style.left=sidebarCollapsed?'52px':'var(--sidebar-w)';
+  btn.innerHTML=sidebarCollapsed?'▶':'◀';
+  btn.style.left=sidebarCollapsed?'52px':'240px';
 }
 
 function toggleColumnPicker(){
