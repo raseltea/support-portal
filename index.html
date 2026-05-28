@@ -1271,6 +1271,38 @@ function updateBadge(){
   document.getElementById('open-badge').textContent=n;
 }
 
+
+function buildColumnPicker(){
+  const cols=[
+    ['requestType','Request Type'],['key','Key'],['summary','Summary'],
+    ['reporter','Reporter'],['assignee','Assignee'],['status','Status'],
+    ['priority','Priority'],['created','Created']
+  ];
+  return cols.map(([c,label])=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer">
+      <input type="checkbox" ${visibleCols.includes(c)?'checked':''} onchange="toggleCol('${c}',this.checked)" style="width:14px;height:14px"/>
+      ${label}
+    </label>`).join('');
+}
+
+function buildTableHeaders(){
+  const map={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',
+    assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
+  return visibleCols.map(c=>`<th>${map[c]||c}</th>`).join('');
+}
+
+function buildTicketRow(t,tt,st,priIcon,isSelected){
+  let cells='';
+  if(visibleCols.includes('requestType')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer"><span style="font-size:16px">${tt?.icon||'📋'}</span> <span class="loz ${tt?.loz||'loz-grey'}" style="font-size:10px">${tt?.label||t.type}</span></td>`;
+  if(visibleCols.includes('key')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer"><span style="font-family:monospace;font-size:12px;color:var(--blue);font-weight:600">${t.id}</span></td>`;
+  if(visibleCols.includes('summary')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer;max-width:260px"><div style="font-weight:500;color:var(--text)">${t.title}</div>${t.fromName?`<div style="font-size:11px;color:var(--text-muted)">${t.fromName}</div>`:''}</td>`;
+  if(visibleCols.includes('reporter')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">${t.fromName?`<div style="display:flex;align-items:center;gap:5px"><div style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">${t.fromName[0].toUpperCase()}</div>${t.fromName}</div>`:'—'}</td>`;
+  if(visibleCols.includes('assignee')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">${t.assignee||'Unassigned'}</td>`;
+  if(visibleCols.includes('status')) cells+=`<td onclick="event.stopPropagation()"><select class="loz ${st.loz}" style="border:none;background:transparent;cursor:pointer;font-size:11px;font-weight:600;padding:2px 4px;border-radius:3px" onchange="quickUpdateStatus('${t.id}','${t.airtableId||''}',this.value)"><option value="open" ${t.status==='open'?'selected':''}>TO DO</option><option value="in-progress" ${t.status==='in-progress'?'selected':''}>IN PROGRESS</option><option value="resolved" ${t.status==='resolved'?'selected':''}>DONE</option><option value="closed" ${t.status==='closed'?'selected':''}>CLOSED</option></select></td>`;
+  if(visibleCols.includes('priority')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:13px">${priIcon} ${t.priority||'—'}</td>`;
+  if(visibleCols.includes('created')) cells+=`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:11px;color:var(--text-muted);white-space:nowrap">${t.created||t.updated||'—'}</td>`;
+  return cells;
+}
 function renderSupportList(){
   document.getElementById('support-list-view').style.display='block';
   document.getElementById('support-new-view').style.display='none';
@@ -1314,12 +1346,7 @@ function renderSupportList(){
         <div id="column-picker" style="display:none;position:absolute;right:0;top:32px;background:var(--surface);
           border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;
           box-shadow:var(--shadow-md);z-index:100">
-          ${['requestType','key','summary','reporter','assignee','status','priority','created'].map(c=>
-            `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer">
-              <input type="checkbox" ${visibleCols.includes(c)?'checked':''} onchange="toggleCol('${c}',this.checked)" style="width:14px;height:14px"/>
-              ${{requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',
-                 assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'}[c]}
-            </label>`).join('')}
+          ${buildColumnPicker()}
         </div>
       </div>
     </div>
@@ -1342,14 +1369,7 @@ function renderSupportList(){
               <input type="checkbox" style="width:14px;height:14px;cursor:pointer" 
                 onchange="toggleAllTickets(this.checked)" title="Select all"/>
             </th>
-            ${visibleCols.includes('requestType')?'<th>Request Type</th>':''}
-            ${visibleCols.includes('key')?'<th>Key</th>':''}
-            ${visibleCols.includes('summary')?'<th>Summary</th>':''}
-            ${visibleCols.includes('reporter')?'<th>Reporter</th>':''}
-            ${visibleCols.includes('assignee')?'<th>Assignee</th>':''}
-            ${visibleCols.includes('status')?'<th>Status</th>':''}
-            ${visibleCols.includes('priority')?'<th>Priority</th>':''}
-            ${visibleCols.includes('created')?'<th>Created</th>':''}
+            ${buildTableHeaders()}
             <th style="width:40px"></th>
           </tr>
         </thead>
@@ -1364,35 +1384,7 @@ function renderSupportList(){
                 <input type="checkbox" ${isSelected?'checked':''} style="width:14px;height:14px;cursor:pointer"
                   onchange="toggleTicketSelect('${t.id}',this.checked)"/>
               </td>
-              ${visibleCols.includes('requestType')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer">
-                <span style="font-size:16px">${tt?.icon||'📋'}</span>
-                <span class="loz ${tt?.loz||'loz-grey'}" style="font-size:10px;margin-left:4px">${tt?.label||t.type}</span>
-              </td>`:''}
-              ${visibleCols.includes('key')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer">
-                <span style="font-family:monospace;font-size:12px;color:var(--blue);font-weight:600">${t.id}</span>
-              </td>`:''}
-              ${visibleCols.includes('summary')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer;max-width:260px">
-                <div style="font-weight:500;color:var(--text)">${t.title}</div>
-                ${t.fromName?`<div style="font-size:11px;color:var(--text-muted);margin-top:1px">${t.fromName}</div>`:''}
-              </td>`:''}
-              ${visibleCols.includes('reporter')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">
-                ${t.fromName?`<div style="display:flex;align-items:center;gap:6px">
-                  <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${(t.fromName||'?')[0].toUpperCase()}</div>
-                  ${t.fromName}
-                </div>`:'—'}
-              </td>`:''}
-              ${visibleCols.includes('assignee')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:12px;color:var(--text-sub)">${t.assignee||'Unassigned'}</td>`:''}
-              ${visibleCols.includes('status')?`<td onclick="event.stopPropagation()">
-                <select class="loz ${st.loz}" style="border:none;background:transparent;cursor:pointer;font-size:11px;font-weight:600;padding:2px 4px;border-radius:3px"
-                  onchange="quickUpdateStatus('${t.id}','${t.airtableId||''}',this.value)">
-                  <option value="open" ${t.status==='open'?'selected':''}>TO DO</option>
-                  <option value="in-progress" ${t.status==='in-progress'?'selected':''}>IN PROGRESS</option>
-                  <option value="resolved" ${t.status==='resolved'?'selected':''}>DONE</option>
-                  <option value="closed" ${t.status==='closed'?'selected':''}>CLOSED</option>
-                </select>
-              </td>`:''}
-              ${visibleCols.includes('priority')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:13px">${priIcon} ${t.priority||'—'}</td>`:''}
-              ${visibleCols.includes('created')?`<td onclick="openTicket('${t.id}')" style="cursor:pointer;font-size:11px;color:var(--text-muted);white-space:nowrap">${t.created||t.updated||'—'}</td>`:''}
+              ${buildTicketRow(t,tt,st,priIcon,isSelected)}
               <td onclick="event.stopPropagation()">
                 <button onclick="deleteTicket('${t.id}')" style="background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px" title="Delete">🗑</button>
               </td>
