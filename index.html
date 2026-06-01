@@ -277,7 +277,7 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 
 <script>
 // === CONFIG ===
-var AT = 'patXjeY3wodEIvZso.816873006255900f92aa1e32df4f5d5cd432f8f38c30746255306032e15cf728';
+var AT = 'patHOTRCTuWSucNjg.e2a05150bdee1f86f835ba8432f64663e20e582afacb42667330bec4632c5813';
 var AB = 'app6eSVRvm1wMFMq9';
 var ATB = 'Table%201';
 
@@ -333,11 +333,7 @@ var TS = {
   "resolved":{label:"Done",loz:"lg"},
   "closed":{label:"Closed",loz:"lgr"},
 };
-var tickets = [
-  {id:"AT-1041",type:"incident",title:"Jira board not loading for EU users",priority:"Critical",status:"in-progress",created:"2025-05-20",updated:"2h ago",assignee:"Maya R.",msgs:[{from:"Maya R.",text:"We've reproduced the issue. Actively investigating.",time:"1h ago",agent:true}],aid:"",fn:"",fe:"",an:"",ad:""},
-  {id:"AT-1038",type:"degraded",title:"Confluence search returning stale results",priority:"High",status:"open",created:"2025-05-19",updated:"5h ago",assignee:"Unassigned",msgs:[],aid:"",fn:"",fe:"",an:"",ad:""},
-  {id:"AT-1031",type:"question",title:"How to configure SSO with Okta?",priority:"Medium",status:"resolved",created:"2025-05-17",updated:"1d ago",assignee:"Sam K.",msgs:[{from:"Sam K.",text:"Navigate to Security › SAML SSO and follow the Okta guide.",time:"2d ago",agent:true}],aid:"",fn:"",fe:"",an:"",ad:""},
-];
+var tickets = [];
 var svcs = [
   {id:"s1",name:"jira-prod",product:"jira",domain:"jira.atlassian.com",status:"active",region:"us-east-1",rps:4200},
   {id:"s2",name:"confluence-eu",product:"confluence",domain:"confluence-eu.atlassian.com",status:"active",region:"eu-west-1",rps:1800},
@@ -370,6 +366,8 @@ function TBA(){var a=document.querySelector('.ni.active');if(!a)return;if(a.data
 
 // === AIRTABLE ===
 function fetchAT(){
+  var rb=document.querySelector('[onclick="fetchAT()"]');
+  if(rb){rb.textContent='↻ Loading...';rb.disabled=true;}
   return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{headers:{'Authorization':'Bearer '+AT}})
     .then(function(r){return r.json();})
     .then(function(data){
@@ -378,11 +376,17 @@ function fetchAT(){
         var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
         if(dels.indexOf(tid)!==-1)return;
         if(tickets.find(function(t){return t.id===tid||t.aid===r.id;}))return;
-        tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:'open',created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:f.Attachment||'',ad:f.AttachData||''});
+        // Load image from localStorage if available
+        var imgData='',imgName=f.Attachment||'';
+        try{var stored=localStorage.getItem('img_'+tid);if(stored){var parsed=JSON.parse(stored);imgData=parsed.data||'';imgName=parsed.name||imgName;}}catch(e){}
+        tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:'open',created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgData});
       });
       updBadge();
       if(document.getElementById('tp-sup').classList.contains('active'))rlist();
-    }).catch(function(e){console.error('AT error:',e);});
+    }).catch(function(e){console.error('AT error:',e);}).finally(function(){
+      var rb=document.querySelector('[onclick="fetchAT()"]');
+      if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
+    });
 }
 function tfl(l){return {Incident:'incident',Performance:'degraded',Question:'question','Feature Request':'feature',Billing:'billing'}[l]||'question';}
 function updBadge(){var n=tickets.filter(function(t){return t.status==='open'||t.status==='in-progress';}).length;document.getElementById('badge').textContent=n;}
@@ -571,7 +575,7 @@ function bdel(){
 function dtk(id){
   if(!confirm('Delete this ticket?'))return;
   if(dels.indexOf(id)===-1)dels.push(id);
-  // Delete from Airtable so it never comes back
+  // Delete from Airtable if it has an ID
   var t=tickets.find(function(x){return x.id===id;});
   if(t&&t.aid){
     fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+t.aid,{
@@ -579,6 +583,8 @@ function dtk(id){
       headers:{'Authorization':'Bearer '+AT}
     }).catch(function(e){console.error('AT delete error:',e);});
   }
+  // Always clean up locally
+  try{localStorage.removeItem('img_'+id);}catch(e){}
   tickets=tickets.filter(function(t){return t.id!==id;});
   sel=sel.filter(function(x){return x!==id;});
   updBadge();
@@ -591,7 +597,7 @@ function dtk(id){
 }
 
 // === NEW TICKET ===
-function showNew(){ns=1;nf={type:"incident",title:"",priority:"High",desc:"",att:""};document.getElementById('sv-list').style.display='none';document.getElementById('sv-det').style.display='none';document.getElementById('sv-new').style.display='block';rnew();}
+function showNew(){ns=1;nf={type:"incident",title:"",priority:"High",desc:"",att:"",ad:""};document.getElementById('sv-list').style.display='none';document.getElementById('sv-det').style.display='none';document.getElementById('sv-new').style.display='block';rnew();}
 function rnew(){
   var v=document.getElementById('sv-new');
   var sh='';["Issue Type","Details","Review"].forEach(function(s,i){sh+='<div style="display:flex;align-items:center"><div style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:'+(ns>i+1?'var(--green)':ns===i+1?'var(--blue)':'#DFE1E6')+';color:'+(ns>=i+1?'#fff':'#8993A4')+'">'+(ns>i+1?'✓':i+1)+'</div><span style="font-size:12px;font-weight:500;margin-left:6px;white-space:nowrap;color:'+(ns===i+1?'var(--text)':'var(--sub)')+'">'+s+'</span>'+(i<2?'<div style="width:36px;height:2px;background:'+(ns>i+1?'var(--blue)':'#DFE1E6')+';margin:0 10px;flex-shrink:0"></div>':'')+'</div>';});
@@ -620,6 +626,15 @@ function rnew(){
   }
   v.innerHTML='<button class="btn bs bsm" style="margin-bottom:12px;padding-left:0" onclick="tf=\'all\';ts=\'\';rlist()">‹ Back to tickets</button><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Raise a ticket</h1><p style="color:var(--sub);font-size:14px;margin-bottom:20px">Get help from our support team</p><div style="display:flex;align-items:center;margin-bottom:24px">'+sh+'</div>'+bH;
 }
+function handleImg(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  nf.att=file.name;
+  var reader=new FileReader();
+  reader.onload=function(e){nf.ad=e.target.result;rnew();};
+  reader.readAsDataURL(file);
+}
+
 function subT(){
   var btns=document.getElementById('nbtns'),send=document.getElementById('nsend'),ok=document.getElementById('nok');
   btns.style.display='none';send.style.display='block';
@@ -628,7 +643,11 @@ function subT(){
   fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{method:'POST',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({records:[{fields:{Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:'admin@internal',Submitted:new Date().toLocaleString('en-GB')}}]})})
   .then(function(){
     send.style.display='none';ok.style.display='block';
-    tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',msgs:[{from:'Admin',text:nf.desc,time:'just now',agent:false}],aid:'',fn:'Admin',fe:'',an:'',ad:''});
+    // Save image to localStorage
+  if(nf.ad&&nf.ad.startsWith('data:image/')){
+    try{localStorage.setItem('img_'+nid,JSON.stringify({name:nf.att,data:nf.ad}));}catch(e){}
+  }
+  tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',msgs:[{from:'Admin',text:nf.desc,time:'just now',agent:false}],aid:'',fn:'Admin',fe:'',an:nf.att||'',ad:nf.ad||''});
     setTimeout(function(){tf='all';ts='';rlist();document.getElementById('sv-new').style.display='none';document.getElementById('sv-list').style.display='block';},2400);
   }).catch(function(){send.style.display='none';btns.style.display='flex';alert('Could not save.');});
 }
@@ -745,6 +764,13 @@ fetchAT();
     }
   }catch(e){}
 })();
+
+// Auto-refresh Airtable every 30 seconds when on support tab
+setInterval(function(){
+  if(document.getElementById('tp-sup').classList.contains('active')){
+    fetchAT();
+  }
+},30000);
 </script>
 </body>
 </html>
