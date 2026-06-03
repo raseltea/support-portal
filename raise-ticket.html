@@ -230,7 +230,7 @@ footer a{color:var(--blue);text-decoration:none}
           <div class="attach-zone" id="attach-zone" onclick="document.getElementById('f-attach').click()">
             📎 Click to attach a screenshot or file
           </div>
-          <input type="file" id="f-attach" style="display:none" onchange="onFileChange(this)"/>
+          <input type="file" id="f-attach" style="display:none" accept="image/*,.pdf,.doc,.docx,.txt" onchange="onFileChange(this)"/>
         </div>
 
         <div class="sla-hint" id="sla-hint">
@@ -270,7 +270,7 @@ footer a{color:var(--blue);text-decoration:none}
 
 <script>
 // ── Airtable config ───────────────────────────────
-const AT_TOKEN = 'patXjeY3wodEIvZso.816873006255900f92aa1e32df4f5d5cd432f8f38c30746255306032e15cf728';
+const AT_TOKEN = 'patHOTRCTuWSucNjg.e2a05150bdee1f86f835ba8432f64663e20e582afacb42667330bec4632c5813';
 const AT_BASE  = 'app6eSVRvm1wMFMq9';
 const AT_TABLE = 'Table%201';
 
@@ -318,13 +318,35 @@ function updateSLA(){
   document.getElementById('sla-time').textContent = SLA[p];
 }
 
+var attachedBase64 = '';
+var attachedMime = '';
+var imgReadPromise = Promise.resolve();
+
 function onFileChange(input){
   const zone = document.getElementById('attach-zone');
   if(input.files && input.files[0]){
-    attachedFile = input.files[0].name;
-    zone.textContent = '📎 ' + attachedFile + '  ✕ remove';
+    const file = input.files[0];
+    attachedFile = file.name;
+    attachedMime = file.type;
+    attachedBase64 = ''; // reset while loading
+    // Read as base64 - use Promise so submit waits for it
+    imgReadPromise = new Promise(function(resolve){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        attachedBase64 = e.target.result;
+        resolve();
+      };
+      reader.onerror = function(){ resolve(); };
+      reader.readAsDataURL(file);
+    });
+    zone.innerHTML = '📎 ' + attachedFile + ' <span style="color:var(--red)">✕ remove</span>';
     zone.classList.add('has-file');
-    zone.onclick = () => { input.value=''; attachedFile=''; zone.textContent='📎 Click to attach a screenshot or file'; zone.classList.remove('has-file'); zone.onclick=()=>input.click(); };
+    zone.onclick = () => { 
+      input.value=''; attachedFile=''; attachedBase64=''; attachedMime=''; imgReadPromise=Promise.resolve();
+      zone.textContent='📎 Click to attach a screenshot or file'; 
+      zone.classList.remove('has-file'); 
+      zone.onclick=()=>input.click(); 
+    };
   }
 }
 
@@ -368,19 +390,26 @@ function submitTicket(){
     sla:         SLA[priority],
     submitted_at:new Date().toLocaleString('en-GB'),
     attachment:  attachedFile || 'None',
+    has_image:   attachedBase64 && attachedMime.startsWith('image/') ? 'Yes' : 'No',
     ticket_url:  `https://raseltea.github.io/support-portal/#ticket-${ticketId}`,
     message:     `${typeLabel} ticket from ${name} (${email})\n\nTitle: ${title}\n\nDescription:\n${desc}\n\nPriority: ${priority}`,
   }).then(async () => {
     // Save to Airtable
+    // Send each field individually to find which one is causing the error
+    // Save image to localStorage so dashboard can display it
+    if(attachedBase64 && attachedBase64.startsWith('data:image/')) {
+      try { localStorage.setItem('img_'+ticketId, JSON.stringify({name:attachedFile,data:attachedBase64})); } catch(e){}
+    }
     await saveToAirtable({
       Name:        name,
       TicketsID:   ticketId,
-      Type:        typeLabel,
       Title:       title,
       Description: desc,
       Priority:    priority,
       Email:       email,
       Submitted:   new Date().toLocaleString('en-GB'),
+      Type:        typeLabel,
+      Attachment:  attachedFile || '',
     });
     document.getElementById('sending-state').style.display='none';
     document.getElementById('success-state').style.display='block';

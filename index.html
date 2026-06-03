@@ -638,7 +638,7 @@ function handleImg(input){
 function subT(){
   var btns=document.getElementById('nbtns'),send=document.getElementById('nsend'),ok=document.getElementById('nok');
   btns.style.display='none';send.style.display='block';
-  var nid='AT-'+(1042+tickets.length-3);
+  var nid='AT-'+Date.now().toString().slice(-6);
   var tt=TT.find(function(t){return t.id===nf.type;});
   fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{method:'POST',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({records:[{fields:{Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:'admin@internal',Submitted:new Date().toLocaleString('en-GB')}}]})})
   .then(function(){
@@ -656,6 +656,13 @@ function subT(){
 function otk(id){sid=id;document.getElementById('sv-list').style.display='none';document.getElementById('sv-new').style.display='none';document.getElementById('sv-det').style.display='block';editOn=false;rdet();}
 function rdet(){
   var t=tickets.find(function(x){return x.id===sid;});if(!t)return;
+  // Load image from localStorage if not already loaded
+  if(!t.ad || !t.ad.startsWith('data:image/')){
+    try{
+      var stored=localStorage.getItem('img_'+t.id);
+      if(stored){var parsed=JSON.parse(stored);t.ad=parsed.data||'';t.an=parsed.name||t.an;}
+    }catch(e){}
+  }
   var tt=TT.find(function(x){return x.id===t.type;}),st=TS[t.status]||{label:t.status,loz:'lgr'};
   var v=document.getElementById('sv-det');
   var mh='<div class="msg my"><div class="mh"><span class="mf" style="color:var(--blue)">'+(t.fn||'You')+'</span><span class="mt">'+t.created+'</span></div><div class="mb">Opened: <em>'+t.title+'</em>.</div></div>';
