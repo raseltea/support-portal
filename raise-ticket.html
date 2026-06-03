@@ -409,7 +409,6 @@ function submitTicket(){
       Email:       email,
       Submitted:   new Date().toLocaleString('en-GB'),
       Type:        typeLabel,
-      Attachment:  attachedFile || '',
     });
     document.getElementById('sending-state').style.display='none';
     document.getElementById('success-state').style.display='block';
