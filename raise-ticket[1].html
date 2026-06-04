@@ -320,6 +320,7 @@ function updateSLA(){
 
 var attachedBase64 = '';
 var attachedMime = '';
+var imgReadPromise = Promise.resolve();
 
 function onFileChange(input){
   const zone = document.getElementById('attach-zone');
@@ -327,16 +328,21 @@ function onFileChange(input){
     const file = input.files[0];
     attachedFile = file.name;
     attachedMime = file.type;
-    // Read as base64
-    const reader = new FileReader();
-    reader.onload = function(e){
-      attachedBase64 = e.target.result; // full data URL
-    };
-    reader.readAsDataURL(file);
+    attachedBase64 = ''; // reset while loading
+    // Read as base64 - use Promise so submit waits for it
+    imgReadPromise = new Promise(function(resolve){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        attachedBase64 = e.target.result;
+        resolve();
+      };
+      reader.onerror = function(){ resolve(); };
+      reader.readAsDataURL(file);
+    });
     zone.innerHTML = '📎 ' + attachedFile + ' <span style="color:var(--red)">✕ remove</span>';
     zone.classList.add('has-file');
     zone.onclick = () => { 
-      input.value=''; attachedFile=''; attachedBase64=''; attachedMime='';
+      input.value=''; attachedFile=''; attachedBase64=''; attachedMime=''; imgReadPromise=Promise.resolve();
       zone.textContent='📎 Click to attach a screenshot or file'; 
       zone.classList.remove('has-file'); 
       zone.onclick=()=>input.click(); 
@@ -403,7 +409,6 @@ function submitTicket(){
       Email:       email,
       Submitted:   new Date().toLocaleString('en-GB'),
       Type:        typeLabel,
-      Attachment:  attachedFile || '',
     });
     document.getElementById('sending-state').style.display='none';
     document.getElementById('success-state').style.display='block';
