@@ -740,8 +740,6 @@ INDEX_HTML
   
   window.onload = function() {
     fetchAT();
-    // Disable auto-refresh to prevent overwriting resolved status
-    // setInterval(fetchAT, 30000);
   };
   
   function switchTab(tab) {
@@ -767,14 +765,13 @@ INDEX_HTML
       if (data.records) {
         tickets = data.records.map(function(rec) {
           const f = rec.fields;
-          // Normalize status values
-          let status = (f.Status || 'open').toLowerCase();
-          if (status === 'resolved' || status === 'done' || status === 'closed') {
-            status = 'resolved';
-          } else if (status === 'in progress' || status === 'progress' || status === 'working') {
-            status = 'progress';
-          } else {
-            status = 'open';
+          // Map Airtable status values (capitalized) to our internal values (lowercase)
+          let status = 'open'; // default
+          if (f.Status) {
+            const statusLower = f.Status.toLowerCase();
+            if (statusLower === 'resolved') status = 'resolved';
+            else if (statusLower === 'progress' || statusLower === 'in progress') status = 'progress';
+            else status = 'open';
           }
           
           return {
@@ -903,9 +900,9 @@ INDEX_HTML
         // Update local state immediately
         t.status = 'resolved';
         
-        // Update Airtable
+        // Update Airtable with CAPITALIZED status to match Single Select options
         console.log('Resolving ticket:', id, 'with aid:', aid);
-        await saveToAirtable({Status: 'resolved'}, aid);
+        await saveToAirtable({Status: 'Resolved'}, aid);
         
         // Update UI
         updateStats();
@@ -992,7 +989,7 @@ INDEX_HTML
       Email: 'raseldd@hotmail.com',
       Submitted: new Date().toLocaleString('en-GB'),
       Type: type,
-      Status: 'open'
+      Status: 'Open'  // Capitalized to match Airtable Single Select
     };
     
     await saveToAirtable(tdata);
