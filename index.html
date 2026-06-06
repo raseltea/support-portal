@@ -16,60 +16,76 @@
     .app { display: flex; min-height: 100vh; }
     
     /* Sidebar */
-    .sidebar { width: 240px; background: var(--sidebar-bg); color: white; position: fixed; height: 100vh; display: flex; flex-direction: column; }
+    .sidebar { width: 240px; background: var(--sidebar-bg); color: white; position: fixed; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
     .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-    .sidebar-header h1 { font-size: 16px; font-weight: 700; }
-    .subtitle { font-size: 11px; opacity: 0.6; }
+    .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .sidebar-header h1 { font-family: var(--font-ui); font-size: 16px; font-weight: 700; }
+    .sidebar-header .subtitle { font-size: 11px; color: rgba(255,255,255,0.6); }
     .nav-section { padding: 16px 0; }
-    .nav-section-title { padding: 8px 20px; font-size: 11px; font-weight: 600; opacity: 0.5; text-transform: uppercase; }
-    .nav-item { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; gap: 12px; color: rgba(255,255,255,0.7); }
+    .nav-section-title { padding: 8px 20px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+    .nav-item { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.7); font-size: 14px; gap: 12px; }
     .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
     .nav-item.active { background: var(--sidebar-active); color: white; border-left: 3px solid white; }
-    .nav-icon { width: 20px; text-align: center; }
-    .nav-badge { margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+    .nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
     .user-section { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-    .user-info { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 32px; height: 32px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    .user-info { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+    .user-details { flex: 1; }
+    .user-name { font-weight: 600; font-size: 13px; }
+    .user-email { font-size: 11px; color: rgba(255,255,255,0.6); }
     
     /* Main Content */
-    .main { flex: 1; margin-left: 240px; padding: 32px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .page-title { font-size: 28px; font-weight: 700; }
-    .btn { padding: 8px 16px; background: var(--blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
-    .btn:hover { background: #0747a6; }
-    .btn-success { background: var(--green); }
+    .main { flex: 1; margin-left: 240px; }
+    .topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; align-items: center; justify-content: space-between; }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--sub); }
+    .breadcrumb strong { color: var(--text); }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .online-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sub); }
+    .online-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+    .btn { padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-ui); }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: #0747a6; }
+    .btn-success { background: var(--green); color: white; }
     .btn-success:hover { background: #006644; }
+    .content { padding: 32px; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .page-header { margin-bottom: 24px; }
+    .page-subtitle { font-size: 12px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
+    .page-title { font-family: var(--font-ui); font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-description { color: var(--sub); font-size: 15px; }
     
     /* Stats */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
     .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
-    .stat-label { color: var(--sub); font-size: 13px; }
+    .stat-label { font-size: 13px; color: var(--sub); }
     .stat-card.open .stat-value { color: var(--blue); }
     .stat-card.resolved .stat-value { color: var(--green); }
     
     /* Table */
-    .table-container { background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; }
+    .table-container { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: 0.06em; }
     td { padding: 12px; border-bottom: 1px solid var(--border); }
     tr:hover { background: var(--bg); cursor: pointer; }
     .ticket-key { color: var(--blue); font-weight: 600; }
-    .status-badge { padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600; }
+    .status-badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600; }
     .status-badge.open { background: #deebff; color: var(--blue); }
     .status-badge.resolved { background: #e3fcef; color: var(--green); }
     
     /* Modal */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
-    .modal-content { background: white; padding: 24px; border-radius: 8px; width: 90%; max-width: 600px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; }
+    .modal-content { background: var(--card); border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-body { padding: 24px; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--sub); }
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 4px; font-family: var(--font-ui); }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 2px solid var(--border); border-radius: 4px; font-size: 14px; font-family: var(--font-ui); }
     .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
   </style>
 </head>
@@ -87,23 +103,23 @@
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Platform</div>
-        <div class="nav-item"><span class="nav-icon">⬡</span><span>Architecture</span></div>
-        <div class="nav-item"><span class="nav-icon">▤</span><span>Dashboard</span></div>
+        <div class="nav-item active" onclick="switchTab('arch')"><span class="nav-icon">⬡</span><span>Architecture</span></div>
+        <div class="nav-item" onclick="switchTab('dash')"><span class="nav-icon">▤</span><span>Dashboard</span></div>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Engineering</div>
-        <div class="nav-item"><span class="nav-icon">◈</span><span>Deep Dive</span></div>
+        <div class="nav-item" onclick="switchTab('deep')"><span class="nav-icon">◈</span><span>Deep Dive</span></div>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Support</div>
-        <div class="nav-item active"><span class="nav-icon">🎫</span><span>My Tickets</span><span class="nav-badge" id="badge">0</span></div>
+        <div class="nav-item" onclick="switchTab('tickets')"><span class="nav-icon">🎫</span><span>My Tickets</span><span class="nav-badge" id="ticket-badge">0</span></div>
       </div>
       <div class="user-section">
         <div class="user-info">
           <div class="avatar">YO</div>
-          <div>
-            <div style="font-weight:600;font-size:13px">You</div>
-            <div style="font-size:11px;opacity:0.6">Manage account</div>
+          <div class="user-details">
+            <div class="user-name">You</div>
+            <div class="user-email">Manage account</div>
           </div>
         </div>
       </div>
@@ -111,32 +127,57 @@
     
     <div class="main">
       <div class="topbar">
-        <h1 class="page-title">My Tickets</h1>
-        <button class="btn" onclick="rnew()">+ Raise ticket</button>
-      </div>
-      
-      <div class="stats-grid">
-        <div class="stat-card open">
-          <div class="stat-value" id="stat-open">0</div>
-          <div class="stat-label">Open</div>
+        <div class="breadcrumb">
+          <strong>Edge Platform</strong><span>›</span><span id="page-title">Architecture</span>
         </div>
-        <div class="stat-card resolved">
-          <div class="stat-value" id="stat-resolved">0</div>
-          <div class="stat-label">Resolved</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-total">0</div>
-          <div class="stat-label">Total</div>
+        <div class="topbar-actions">
+          <div class="online-indicator"><div class="online-dot"></div><span>1,994 online</span></div>
+          <div class="avatar" style="width:32px;height:32px">YO</div>
         </div>
       </div>
       
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr><th>KEY</th><th>SUMMARY</th><th>STATUS</th><th>ACTIONS</th></tr>
-          </thead>
-          <tbody id="ticket-list"></tbody>
-        </table>
+      <div class="content">
+        <div class="tab active" id="tab-arch">
+          <div class="page-header">
+            <div class="page-subtitle">CUSTOMER SUPPORT</div>
+            <h1 class="page-title">System Architecture</h1>
+            <p class="page-description">Self-service load balancing — ~2,000 Envoy proxies across 13 AWS regions</p>
+          </div>
+        </div>
+        <div class="tab" id="tab-dash">
+          <div class="page-header">
+            <div class="page-subtitle">CUSTOMER SUPPORT</div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-description">Global proxy fleet health and registered services</p>
+          </div>
+        </div>
+        <div class="tab" id="tab-deep">
+          <div class="page-header">
+            <div class="page-subtitle">CUSTOMER SUPPORT</div>
+            <h1 class="page-title">Deep Dive</h1>
+            <p class="page-description">8 years of platform engineering in 6 chapters</p>
+          </div>
+        </div>
+        <div class="tab" id="tab-tickets">
+          <div class="page-header">
+            <div class="page-subtitle">CUSTOMER SUPPORT</div>
+            <h1 class="page-title">My Tickets</h1>
+            <p class="page-description">Track and manage your support requests</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card open"><div class="stat-value" id="stat-open">0</div><div class="stat-label">Open</div></div>
+            <div class="stat-card resolved"><div class="stat-value" id="stat-resolved">0</div><div class="stat-label">Resolved</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total</div></div>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>KEY</th><th>SUMMARY</th><th>STATUS</th><th>ACTIONS</th></tr>
+              </thead>
+              <tbody id="ticket-list"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -144,10 +185,10 @@
   <div class="modal" id="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="modal-title"></h2>
+        <h2 id="modal-title" style="font-family:var(--font-ui);font-weight:700">Ticket</h2>
         <button class="close-btn" onclick="closeModal()">×</button>
       </div>
-      <div id="modal-body"></div>
+      <div class="modal-body" id="modal-body"></div>
     </div>
   </div>
 
@@ -157,7 +198,21 @@
     const AT = 'patHOTRCTuWSucNjg.patHOTRCTuWSucNjg.e2a05150bdee1f86f835ba8432f64663e20e582afacb42667330bec4632c5813';
     let tickets = [];
     
-    window.onload = fetchAT;
+    window.onload = function() { fetchAT(); };
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const tabMap = {arch:'tab-arch', dash:'tab-dash', deep:'tab-deep', tickets:'tab-tickets'};
+      const titleMap = {arch:'Architecture', dash:'Dashboard', deep:'Deep Dive', tickets:'My Tickets'};
+      if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+      document.getElementById('page-title').textContent = titleMap[tab];
+      const navItems = document.querySelectorAll('.nav-item');
+      if (tab === 'arch') navItems[0].classList.add('active');
+      else if (tab === 'dash') navItems[1].classList.add('active');
+      else if (tab === 'deep') navItems[2].classList.add('active');
+      else if (tab === 'tickets') navItems[3].classList.add('active');
+    }
     
     async function fetchAT() {
       try {
@@ -168,9 +223,9 @@
         
         tickets = data.records.map(rec => {
           const f = rec.fields;
-          const s = (f.Status || '').toLowerCase();
+          const statusLower = (f.Status || '').toLowerCase();
           let status = 'open';
-          if (s.includes('resolv') || s.includes('done')) status = 'resolved';
+          if (statusLower.includes('resolv') || statusLower.includes('done')) status = 'resolved';
           
           return {
             id: f.TicketsID || 'UNK',
@@ -183,7 +238,7 @@
         updateStats();
         rlist();
       } catch (e) {
-        console.error('Error:', e);
+        console.error('Fetch error:', e);
       }
     }
     
@@ -193,13 +248,13 @@
       document.getElementById('stat-open').textContent = open;
       document.getElementById('stat-resolved').textContent = resolved;
       document.getElementById('stat-total').textContent = tickets.length;
-      document.getElementById('badge').textContent = open;
+      document.getElementById('ticket-badge').textContent = open;
     }
     
     function rlist() {
       const tbody = document.getElementById('ticket-list');
       if (tickets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--sub)">No tickets yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:60px 20px;color:var(--sub)"><div style="font-size:48px;margin-bottom:16px">🎫</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">No tickets yet</div></td></tr>';
         return;
       }
       
@@ -208,48 +263,52 @@
           <td class="ticket-key">${t.id}</td>
           <td>${t.title}</td>
           <td><span class="status-badge ${t.status}">${t.status.toUpperCase()}</span></td>
-          <td>${t.status !== 'resolved' ? `<button class="btn btn-success" onclick="event.stopPropagation();resolveTicket('${t.id}','${t.aid}')">✓ Resolve</button>` : '✓ Done'}</td>
+          <td>${t.status !== 'resolved' ? `<button class="btn btn-success" onclick="event.stopPropagation();resolveTicket('${t.id}','${t.aid}')">✓ Resolve</button>` : '✓ Resolved'}</td>
         </tr>
       `).join('');
     }
     
     async function resolveTicket(id, aid) {
-      if (!confirm('Mark ' + id + ' as resolved?')) return;
+      if (!confirm('Mark ticket ' + id + ' as resolved?')) return;
       
-      const t = tickets.find(x => x.id === id);
-      if (!t) return;
+      const ticket = tickets.find(t => t.id === id);
+      if (!ticket) return;
       
-      // Update UI
-      t.status = 'resolved';
+      // Update UI immediately
+      ticket.status = 'resolved';
       updateStats();
       rlist();
       
-      // Save to Airtable
+      // Save to Airtable with EXACT casing to match your Single Select
       try {
         const url = `https://api.airtable.com/v0/${AB}/${ATB}/${aid}`;
-        const resp = await fetch(url, {
+        const response = await fetch(url, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${AT}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ fields: { Status: 'Resolved' } })
+          body: JSON.stringify({
+            fields: { Status: 'Resolved' }
+          })
         });
         
-        if (!resp.ok) {
-          const err = await resp.json();
-          console.error('Airtable error:', err);
-          alert('Failed to save: ' + (err.error?.message || resp.statusText));
-          t.status = 'open';
+        if (!response.ok) {
+          const error = await response.json();
+          console.error('Airtable error:', error);
+          alert('Failed to save: ' + (error.error?.message || response.statusText));
+          // Revert on error
+          ticket.status = 'open';
           updateStats();
           rlist();
         } else {
-          alert('✓ Ticket resolved!');
+          console.log('✅ Ticket resolved and saved to Airtable!');
+          alert('✓ Ticket ' + id + ' resolved!');
         }
       } catch (e) {
-        console.error('Error:', e);
+        console.error('Network error:', e);
         alert('Network error');
-        t.status = 'open';
+        ticket.status = 'open';
         updateStats();
         rlist();
       }
@@ -261,19 +320,15 @@
       
       document.getElementById('modal-title').textContent = t.id;
       document.getElementById('modal-body').innerHTML = `
-        <p><strong>Title:</strong> ${t.title}</p>
-        <p><strong>Status:</strong> ${t.status}</p>
-        ${t.status !== 'resolved' ? `<button class="btn btn-success" style="margin-top:16px" onclick="resolveTicket('${t.id}','${t.aid}');closeModal()">✓ Resolve Ticket</button>` : ''}
+        <div style="margin-bottom:16px"><strong>Title:</strong> ${t.title}</div>
+        <div style="margin-bottom:16px"><strong>Status:</strong> <span class="status-badge ${t.status}">${t.status.toUpperCase()}</span></div>
+        ${t.status !== 'resolved' ? `<button class="btn btn-success" onclick="resolveTicket('${t.id}','${t.aid}');closeModal()">✓ Resolve Ticket</button>` : '<div style="color:var(--green);font-weight:600">✓ This ticket is resolved</div>'}
       `;
       document.getElementById('modal').classList.add('active');
     }
     
     function closeModal() {
       document.getElementById('modal').classList.remove('active');
-    }
-    
-    function rnew() {
-      alert('Use raise-ticket.html to create tickets');
     }
   </script>
 </body>
