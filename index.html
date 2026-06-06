@@ -9,74 +9,131 @@
       --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --bg: #f4f5f7; --card: #fff; --text: #172b4d; --sub: #5e6c84;
       --border: #dfe1e6; --blue: #0052cc; --green: #00875a; --amber: #ff991f;
-      --red: #de350b; --sidebar-bg: #172b4d;
+      --red: #de350b; --sidebar-bg: #172b4d; --sidebar-active: #0052cc;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: var(--font-ui); background: var(--bg); color: var(--text); }
     .app { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; background: var(--sidebar-bg); color: white; position: fixed; height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 240px; background: var(--sidebar-bg); color: white; position: fixed; height: 100vh; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .sidebar-header h1 { font-size: 16px; font-weight: 700; }
+    .subtitle { font-size: 11px; opacity: 0.6; }
+    .nav-section { padding: 16px 0; }
+    .nav-section-title { padding: 8px 20px; font-size: 11px; font-weight: 600; opacity: 0.5; text-transform: uppercase; }
+    .nav-item { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; gap: 12px; color: rgba(255,255,255,0.7); }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-item.active { background: var(--sidebar-active); color: white; border-left: 3px solid white; }
+    .nav-icon { width: 20px; text-align: center; }
+    .nav-badge { margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .user-section { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 32px; height: 32px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    
+    /* Main Content */
     .main { flex: 1; margin-left: 240px; padding: 32px; }
-    .btn { padding: 8px 16px; background: var(--blue); color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .page-title { font-size: 28px; font-weight: 700; }
+    .btn { padding: 8px 16px; background: var(--blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
     .btn:hover { background: #0747a6; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .btn-success { background: var(--green); }
+    .btn-success:hover { background: #006644; }
+    
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px; }
+    .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+    .stat-label { color: var(--sub); font-size: 13px; }
+    .stat-card.open .stat-value { color: var(--blue); }
+    .stat-card.resolved .stat-value { color: var(--green); }
+    
+    /* Table */
+    .table-container { background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; }
+    td { padding: 12px; border-bottom: 1px solid var(--border); }
     tr:hover { background: var(--bg); cursor: pointer; }
+    .ticket-key { color: var(--blue); font-weight: 600; }
     .status-badge { padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600; }
-    .status-badge.open { background: #deebff; color: #0052cc; }
-    .status-badge.resolved { background: #e3fcef; color: #006644; }
+    .status-badge.open { background: #deebff; color: var(--blue); }
+    .status-badge.resolved { background: #e3fcef; color: var(--green); }
+    
+    /* Modal */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
     .modal-content { background: white; padding: 24px; border-radius: 8px; width: 90%; max-width: 600px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 4px; font-family: var(--font-ui); }
+    .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="sidebar">
-      <div style="padding: 20px;">
-        <h1>Edge Platform</h1>
-        <div style="font-size: 11px; opacity: 0.6;">atlassian.com</div>
-      </div>
-      <div style="padding: 16px 20px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 32px; height: 32px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center;">YO</div>
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">EP</div>
           <div>
-            <div style="font-weight: 600; font-size: 13px;">You</div>
-            <div style="font-size: 11px; opacity: 0.6;">Manage account</div>
+            <h1>Edge Platform</h1>
+            <div class="subtitle">atlassian.com</div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Platform</div>
+        <div class="nav-item"><span class="nav-icon">⬡</span><span>Architecture</span></div>
+        <div class="nav-item"><span class="nav-icon">▤</span><span>Dashboard</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Engineering</div>
+        <div class="nav-item"><span class="nav-icon">◈</span><span>Deep Dive</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Support</div>
+        <div class="nav-item active"><span class="nav-icon">🎫</span><span>My Tickets</span><span class="nav-badge" id="badge">0</span></div>
+      </div>
+      <div class="user-section">
+        <div class="user-info">
+          <div class="avatar">YO</div>
+          <div>
+            <div style="font-weight:600;font-size:13px">You</div>
+            <div style="font-size:11px;opacity:0.6">Manage account</div>
           </div>
         </div>
       </div>
     </div>
     
     <div class="main">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h1 style="font-size: 28px; font-weight: 700;">My Tickets</h1>
+      <div class="topbar">
+        <h1 class="page-title">My Tickets</h1>
         <button class="btn" onclick="rnew()">+ Raise ticket</button>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-        <div style="background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px;">
-          <div style="font-size: 32px; font-weight: 700; color: var(--blue);" id="stat-open">0</div>
-          <div style="color: var(--sub); font-size: 13px;">Open</div>
+      <div class="stats-grid">
+        <div class="stat-card open">
+          <div class="stat-value" id="stat-open">0</div>
+          <div class="stat-label">Open</div>
         </div>
-        <div style="background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px;">
-          <div style="font-size: 32px; font-weight: 700; color: var(--green);" id="stat-resolved">0</div>
-          <div style="color: var(--sub); font-size: 13px;">Resolved</div>
+        <div class="stat-card resolved">
+          <div class="stat-value" id="stat-resolved">0</div>
+          <div class="stat-label">Resolved</div>
         </div>
-        <div style="background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px;">
-          <div style="font-size: 32px; font-weight: 700;" id="stat-total">0</div>
-          <div style="color: var(--sub); font-size: 13px;">Total</div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total</div>
         </div>
       </div>
       
-      <div style="background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+      <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th>KEY</th>
-              <th>SUMMARY</th>
-              <th>STATUS</th>
-              <th>ACTIONS</th>
-            </tr>
+            <tr><th>KEY</th><th>SUMMARY</th><th>STATUS</th><th>ACTIONS</th></tr>
           </thead>
           <tbody id="ticket-list"></tbody>
         </table>
@@ -86,11 +143,11 @@
   
   <div class="modal" id="modal">
     <div class="modal-content">
-      <h2 id="modal-title" style="margin-bottom: 16px;"></h2>
-      <div id="modal-body"></div>
-      <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
-        <button class="btn" onclick="closeModal()">Close</button>
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button class="close-btn" onclick="closeModal()">×</button>
       </div>
+      <div id="modal-body"></div>
     </div>
   </div>
 
@@ -111,9 +168,9 @@
         
         tickets = data.records.map(rec => {
           const f = rec.fields;
-          const statusLower = (f.Status || '').toLowerCase();
+          const s = (f.Status || '').toLowerCase();
           let status = 'open';
-          if (statusLower.includes('resolv') || statusLower.includes('done')) status = 'resolved';
+          if (s.includes('resolv') || s.includes('done')) status = 'resolved';
           
           return {
             id: f.TicketsID || 'UNK',
@@ -126,7 +183,7 @@
         updateStats();
         rlist();
       } catch (e) {
-        console.error('Fetch error:', e);
+        console.error('Error:', e);
       }
     }
     
@@ -136,66 +193,63 @@
       document.getElementById('stat-open').textContent = open;
       document.getElementById('stat-resolved').textContent = resolved;
       document.getElementById('stat-total').textContent = tickets.length;
+      document.getElementById('badge').textContent = open;
     }
     
     function rlist() {
       const tbody = document.getElementById('ticket-list');
       if (tickets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No tickets</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--sub)">No tickets yet</td></tr>';
         return;
       }
       
       tbody.innerHTML = tickets.map(t => `
         <tr onclick="showDetail('${t.id}')">
-          <td style="color: var(--blue); font-weight: 600;">${t.id}</td>
+          <td class="ticket-key">${t.id}</td>
           <td>${t.title}</td>
           <td><span class="status-badge ${t.status}">${t.status.toUpperCase()}</span></td>
-          <td>${t.status !== 'resolved' ? `<button class="btn" style="background: var(--green);" onclick="event.stopPropagation(); resolveTicket('${t.id}', '${t.aid}')">✓ Resolve</button>` : '✓ Done'}</td>
+          <td>${t.status !== 'resolved' ? `<button class="btn btn-success" onclick="event.stopPropagation();resolveTicket('${t.id}','${t.aid}')">✓ Resolve</button>` : '✓ Done'}</td>
         </tr>
       `).join('');
     }
     
     async function resolveTicket(id, aid) {
-      if (!confirm('Mark ticket ' + id + ' as resolved?')) return;
+      if (!confirm('Mark ' + id + ' as resolved?')) return;
       
-      const ticket = tickets.find(t => t.id === id);
-      if (!ticket) return;
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
       
-      // Update UI immediately
-      ticket.status = 'resolved';
+      // Update UI
+      t.status = 'resolved';
       updateStats();
       rlist();
       
-      // Save to Airtable - MUST match your Single Select option EXACTLY
+      // Save to Airtable
       try {
         const url = `https://api.airtable.com/v0/${AB}/${ATB}/${aid}`;
-        const response = await fetch(url, {
+        const resp = await fetch(url, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${AT}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            fields: { Status: 'Resolved' }
-          })
+          body: JSON.stringify({ fields: { Status: 'Resolved' } })
         });
         
-        if (!response.ok) {
-          const error = await response.json();
-          console.error('Airtable error:', error);
-          alert('Failed to save: ' + (error.error?.message || response.statusText));
-          // Revert on error
-          ticket.status = 'open';
+        if (!resp.ok) {
+          const err = await resp.json();
+          console.error('Airtable error:', err);
+          alert('Failed to save: ' + (err.error?.message || resp.statusText));
+          t.status = 'open';
           updateStats();
           rlist();
         } else {
-          console.log('✅ Ticket resolved and saved to Airtable!');
-          alert('✓ Ticket ' + id + ' resolved!');
+          alert('✓ Ticket resolved!');
         }
       } catch (e) {
-        console.error('Network error:', e);
+        console.error('Error:', e);
         alert('Network error');
-        ticket.status = 'open';
+        t.status = 'open';
         updateStats();
         rlist();
       }
@@ -209,7 +263,7 @@
       document.getElementById('modal-body').innerHTML = `
         <p><strong>Title:</strong> ${t.title}</p>
         <p><strong>Status:</strong> ${t.status}</p>
-        ${t.status !== 'resolved' ? `<button class="btn" style="background: var(--green); margin-top: 16px;" onclick="resolveTicket('${t.id}', '${t.aid}'); closeModal();">✓ Resolve Ticket</button>` : ''}
+        ${t.status !== 'resolved' ? `<button class="btn btn-success" style="margin-top:16px" onclick="resolveTicket('${t.id}','${t.aid}');closeModal()">✓ Resolve Ticket</button>` : ''}
       `;
       document.getElementById('modal').classList.add('active');
     }
@@ -219,7 +273,7 @@
     }
     
     function rnew() {
-      alert('Create ticket feature - use your existing form');
+      alert('Use raise-ticket.html to create tickets');
     }
   </script>
 </body>
