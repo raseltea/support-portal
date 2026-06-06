@@ -740,7 +740,8 @@ INDEX_HTML
   
   window.onload = function() {
     fetchAT();
-    setInterval(fetchAT, 30000);
+    // Disable auto-refresh to prevent overwriting resolved status
+    // setInterval(fetchAT, 30000);
   };
   
   function switchTab(tab) {
@@ -766,13 +767,23 @@ INDEX_HTML
       if (data.records) {
         tickets = data.records.map(function(rec) {
           const f = rec.fields;
+          // Normalize status values
+          let status = (f.Status || 'open').toLowerCase();
+          if (status === 'resolved' || status === 'done' || status === 'closed') {
+            status = 'resolved';
+          } else if (status === 'in progress' || status === 'progress' || status === 'working') {
+            status = 'progress';
+          } else {
+            status = 'open';
+          }
+          
           return {
             id: f.TicketsID || 'AT-UNK',
             aid: rec.id,
             type: f.Type || 'incident',
             title: f.Title || 'Untitled',
             priority: f.Priority || 'Medium',
-            status: f.Status || 'open',
+            status: status,
             created: f.Submitted || '',
             reporter: f.Name || 'Unknown',
             email: f.Email || '',
@@ -792,7 +803,8 @@ INDEX_HTML
       const url = aid 
         ? 'https://api.airtable.com/v0/' + AB + '/' + ATB + '/' + aid
         : 'https://api.airtable.com/v0/' + AB + '/' + ATB;
-      await fetch(url, {
+      
+      const response = await fetch(url, {
         method: aid ? 'PATCH' : 'POST',
         headers: {
           'Authorization': 'Bearer ' + AT,
@@ -800,8 +812,18 @@ INDEX_HTML
         },
         body: JSON.stringify({fields: data})
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save to Airtable: ' + response.statusText);
+      }
+      
+      const result = await response.json();
+      console.log('Airtable save successful:', result);
+      return result;
     } catch (e) {
       console.error('Airtable save error:', e);
+      alert('Error saving to Airtable: ' + e.message);
+      throw e;
     }
   }
   
@@ -877,11 +899,27 @@ INDEX_HTML
     if (!t) return;
     
     if (confirm('Mark ticket ' + id + ' as resolved?')) {
-      t.status = 'resolved';
-      await saveToAirtable({Status: 'resolved'}, aid);
-      updateStats();
-      rlist();
-      alert('Ticket ' + id + ' resolved and moved to Resolved queue');
+      try {
+        // Update local state immediately
+        t.status = 'resolved';
+        
+        // Update Airtable
+        console.log('Resolving ticket:', id, 'with aid:', aid);
+        await saveToAirtable({Status: 'resolved'}, aid);
+        
+        // Update UI
+        updateStats();
+        rlist();
+        
+        alert('Ticket ' + id + ' has been resolved and moved to Resolved queue');
+      } catch (e) {
+        console.error('Failed to resolve ticket:', e);
+        alert('Failed to resolve ticket. Please try again.');
+        // Revert local change on error
+        t.status = 'open';
+        updateStats();
+        rlist();
+      }
     }
   }
   
