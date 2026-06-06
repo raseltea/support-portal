@@ -5,23 +5,27 @@ INDEX_HTML
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edge Platform — Atlassian</title>
-  <link href="https://fonts.googleapis.com/css2?family=Charlie+Display:wght@600;700&family=Charlie+Text:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- REMOVED BROKEN GOOGLE FONTS LINK -->
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* SYSTEM FONT STACK (Replaces Charlie Display/Text) */
     :root {
+      --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       --bg: #f4f5f7; --card: #fff; --text: #172b4d; --sub: #5e6c84; --muted: #97a0af;
       --border: #dfe1e6; --blue: #0052cc; --red: #de350b; --green: #00875a; --amber: #ff991f;
       --purple: #6554c0; --sidebar-bg: #172b4d; --sidebar-active: #0052cc;
       --incident: #ffebe6; --incident-text: #bf2600; --feature: #e3fcef; --feature-text: #006644;
       --performance: #fff0b6; --performance-text: #172b4d;
     }
-    body { font-family: 'Charlie Text', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: 1.5; }
     .app { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
     .sidebar { width: 240px; background: var(--sidebar-bg); color: white; position: fixed; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
     .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .sidebar-header .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-    .sidebar-header h1 { font-family: 'Charlie Display', sans-serif; font-size: 16px; font-weight: 700; }
+    .sidebar-header h1 { font-family: var(--font-ui); font-size: 16px; font-weight: 700; }
     .sidebar-header .subtitle { font-size: 11px; color: rgba(255,255,255,0.6); }
     .nav-section { padding: 16px 0; }
     .nav-section-title { padding: 8px 20px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -36,6 +40,8 @@ INDEX_HTML
     .user-details { flex: 1; }
     .user-name { font-weight: 600; font-size: 13px; }
     .user-email { font-size: 11px; color: rgba(255,255,255,0.6); }
+    
+    /* Main Content */
     .main { flex: 1; margin-left: 240px; }
     .topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; align-items: center; justify-content: space-between; }
     .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--sub); }
@@ -43,7 +49,9 @@ INDEX_HTML
     .topbar-actions { display: flex; align-items: center; gap: 12px; }
     .online-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sub); }
     .online-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
-    .btn { padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    
+    /* Buttons & UI */
+    .btn { padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-ui); }
     .btn-primary { background: var(--blue); color: white; }
     .btn-primary:hover { background: #0747a6; }
     .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
@@ -53,8 +61,10 @@ INDEX_HTML
     .tab.active { display: block; }
     .page-header { margin-bottom: 24px; }
     .page-subtitle { font-size: 12px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
-    .page-title { font-family: 'Charlie Display', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-title { font-family: var(--font-ui); font-size: 28px; font-weight: 700; margin-bottom: 8px; }
     .page-description { color: var(--sub); font-size: 15px; }
+    
+    /* Stats */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
     .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
     .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
@@ -63,18 +73,22 @@ INDEX_HTML
     .stat-card.progress .stat-value { color: var(--amber); }
     .stat-card.resolved .stat-value { color: var(--green); }
     .stat-card.total .stat-value { color: var(--text); }
+    
+    /* Toolbar & Table */
     .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; }
-    .search-box { flex: 1; max-width: 400px; padding: 8px 12px; border: 2px solid var(--border); border-radius: 4px; font-size: 14px; }
+    .search-box { flex: 1; max-width: 400px; padding: 8px 12px; border: 2px solid var(--border); border-radius: 4px; font-size: 14px; font-family: var(--font-ui); }
     .search-box:focus { outline: none; border-color: var(--blue); }
     .filter-tabs { display: flex; gap: 8px; }
-    .tab-btn { padding: 6px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .tab-btn { padding: 6px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: var(--font-ui); }
     .tab-btn:hover { background: var(--bg); }
     .tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
     .table-container { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
     td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:hover { background: var(--bg); }
+    tr:hover { background: var(--bg); cursor: pointer; }
+    
+    /* Badges & Icons */
     .request-type { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
     .request-type-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
     .request-type.incident { color: var(--incident-text); }
@@ -98,6 +112,8 @@ INDEX_HTML
     .priority-dot.high { background: var(--amber); }
     .priority-dot.medium { background: var(--purple); }
     .priority-dot.low { background: var(--green); }
+    
+    /* Modals & Forms */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
     .modal-content { background: var(--card); border-radius: 8px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
@@ -106,7 +122,7 @@ INDEX_HTML
     .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--sub); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 2px solid var(--border); border-radius: 4px; font-size: 14px; font-family: inherit; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 2px solid var(--border); border-radius: 4px; font-size: 14px; font-family: var(--font-ui); }
     .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--sub); }
   </style>
@@ -126,7 +142,7 @@ INDEX_HTML
       <div class="nav-section">
         <div class="nav-section-title">Platform</div>
         <div class="nav-item active" onclick="switchTab('arch')"><span class="nav-icon"></span><span>Architecture</span></div>
-        <div class="nav-item" onclick="switchTab('dash')"><span class="nav-icon">▤</span><span>Dashboard</span></div>
+        <div class="nav-item" onclick="switchTab('dash')"><span class="nav-icon"></span><span>Dashboard</span></div>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Engineering</div>
@@ -228,7 +244,7 @@ INDEX_HTML
             <span class="status-badge" id="modal-status">TO DO</span>
             <span class="ticket-key" id="modal-id">AT-1001</span>
           </div>
-          <h2 style="font-family:'Charlie Display',sans-serif;font-size:20px" id="modal-title">Title</h2>
+          <h2 style="font-family:var(--font-ui);font-size:20px;font-weight:700" id="modal-title">Title</h2>
         </div>
         <button class="close-btn" onclick="closeModal()">×</button>
       </div>
@@ -239,7 +255,7 @@ INDEX_HTML
   <div class="modal" id="raise-modal">
     <div class="modal-content" style="max-width:600px">
       <div class="modal-header">
-        <h2 style="font-family:'Charlie Display',sans-serif">New Ticket</h2>
+        <h2 style="font-family:var(--font-ui);font-weight:700">New Ticket</h2>
         <button class="close-btn" onclick="closeRaise()">×</button>
       </div>
       <div class="modal-body">
@@ -400,7 +416,6 @@ INDEX_HTML
     rlist();
   }
   
-  // === THE FIX: ROBUST RESOLVE FUNCTION ===
   async function resolveTicket(id, aid) {
     const t = tickets.find(x => x.id === id);
     if (!t) return;
@@ -414,7 +429,7 @@ INDEX_HTML
     // 2. Save to Airtable with EXACT casing
     try {
       const url = `https://api.airtable.com/v0/${AB}/${ATB}/${aid}`;
-      const payload = { fields: { "Status": "Resolved" } }; // Must match Airtable option exactly
+      const payload = { fields: { "Status": "Resolved" } }; 
       
       console.log('Sending to Airtable:', payload);
       
