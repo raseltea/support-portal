@@ -765,13 +765,18 @@ INDEX_HTML
       if (data.records) {
         tickets = data.records.map(function(rec) {
           const f = rec.fields;
-          // Map Airtable status values (capitalized) to our internal values (lowercase)
+          // Map Airtable status values to our internal values
+          // Handle: "Open", "Progress", "Resolved", "Done", "done", "DONE", etc.
           let status = 'open'; // default
           if (f.Status) {
             const statusLower = f.Status.toLowerCase();
-            if (statusLower === 'resolved') status = 'resolved';
-            else if (statusLower === 'progress' || statusLower === 'in progress') status = 'progress';
-            else status = 'open';
+            if (statusLower === 'resolved' || statusLower === 'done') {
+              status = 'resolved';
+            } else if (statusLower === 'progress' || statusLower === 'in progress') {
+              status = 'progress';
+            } else {
+              status = 'open';
+            }
           }
           
           return {
@@ -811,7 +816,8 @@ INDEX_HTML
       });
       
       if (!response.ok) {
-        throw new Error('Failed to save to Airtable: ' + response.statusText);
+        const errorText = await response.text();
+        throw new Error('Failed to save to Airtable: ' + response.statusText + ' - ' + errorText);
       }
       
       const result = await response.json();
@@ -900,7 +906,7 @@ INDEX_HTML
         // Update local state immediately
         t.status = 'resolved';
         
-        // Update Airtable with CAPITALIZED status to match Single Select options
+        // Update Airtable with EXACTLY "Resolved" to match Single Select option
         console.log('Resolving ticket:', id, 'with aid:', aid);
         await saveToAirtable({Status: 'Resolved'}, aid);
         
@@ -908,10 +914,10 @@ INDEX_HTML
         updateStats();
         rlist();
         
-        alert('Ticket ' + id + ' has been resolved and moved to Resolved queue');
+        alert('✓ Ticket ' + id + ' has been resolved!');
       } catch (e) {
         console.error('Failed to resolve ticket:', e);
-        alert('Failed to resolve ticket. Please try again.');
+        alert('Failed to resolve ticket: ' + e.message);
         // Revert local change on error
         t.status = 'open';
         updateStats();
@@ -988,7 +994,7 @@ INDEX_HTML
       Priority: priority,
       Email: 'raseldd@hotmail.com',
       Submitted: new Date().toLocaleString('en-GB'),
-      Type: type,
+      Type: type.charAt(0).toUpperCase() + type.slice(1),
       Status: 'Open'  // Capitalized to match Airtable Single Select
     };
     
