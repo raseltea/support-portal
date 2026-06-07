@@ -1089,6 +1089,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUGGING CREDENTIALS HIDE ===');
+    
+    // Check what we're finding
+    const credentialsSection = document.querySelector('.Credentials') || 
+                               document.querySelector('section:last-of-type') ||
+                               document.querySelector('form');
+    
+    console.log('Credentials section found:', credentialsSection);
+    console.log('Credentials HTML:', credentialsSection ? credentialsSection.outerHTML.substring(0, 200) : 'NOT FOUND');
+    
+    // Find all sections
+    const allSections = document.querySelectorAll('section');
+    console.log('Total sections found:', allSections.length);
+    allSections.forEach((section, index) => {
+        console.log(`Section ${index}:`, section.className, section.id);
+    });
+    
+    // Test hiding immediately
+    if (credentialsSection) {
+        console.log('Attempting to hide credentials...');
+        credentialsSection.style.display = 'none';
+        console.log('Hide attempted');
+    }
+});
+</script>
 </body>
 </html>
 </body>
