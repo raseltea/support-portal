@@ -1064,28 +1064,41 @@ function doLogin() {
     }
 }
 </script>
-  <script>
-// Hide credentials when navigating away
+ <script>
+// Hide credentials section by default
 document.addEventListener('DOMContentLoaded', function() {
-    const logoutBtn = document.querySelector('a[href*="logout"], a[href*="Logout"]');
-    const navLinks = document.querySelectorAll('a[href*="Architecture"], a[href*="Dashboard"], a[href*="Deep Dive"], a[href*="Tickets"]');
+    // Find the credentials section - look for the heading "CREDENTIALS"
+    const allElements = document.querySelectorAll('h3, h4, h5, .section-title, label');
+    let credentialsContainer = null;
     
-    // Fixed selector - capital C for Credentials
-    const credentialsSection = document.querySelector('.Credentials') || 
-                               document.querySelector('section:last-of-type');
-    
-    function hideCredentials() {
-        if (credentialsSection) {
-            credentialsSection.style.display = 'none';
+    for (let el of allElements) {
+        if (el.textContent.trim().toUpperCase() === 'CREDENTIALS') {
+            credentialsContainer = el.closest('section') || el.closest('div') || el.parentElement;
+            break;
         }
     }
     
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', hideCredentials);
+    // Hide it immediately
+    if (credentialsContainer) {
+        credentialsContainer.style.display = 'none';
     }
     
+    // Show only when clicking "Manage account"
+    const manageAccountBtn = document.querySelector('a[href*="account"], .manage-account');
+    if (manageAccountBtn && credentialsContainer) {
+        manageAccountBtn.addEventListener('click', function() {
+            credentialsContainer.style.display = 'block';
+        });
+    }
+    
+    // Hide when clicking any nav link
+    const navLinks = document.querySelectorAll('nav a, .nav-link');
     navLinks.forEach(link => {
-        link.addEventListener('click', hideCredentials);
+        link.addEventListener('click', function() {
+            if (credentialsContainer) {
+                credentialsContainer.style.display = 'none';
+            }
+        });
     });
 });
 </script>
