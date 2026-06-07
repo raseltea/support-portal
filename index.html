@@ -1064,30 +1064,32 @@ function doLogin() {
     }
 }
 </script>
-<script>
-// Hide credentials when clicking logout or navigating away
+  <script>
+// Hide credentials when navigating away
 document.addEventListener('DOMContentLoaded', function() {
-    const logoutBtn = document.querySelector('a[href*="logout"], .logout');
-    const navLinks = document.querySelectorAll('nav a, .dashboard-link, .deep-dive-link');
-    const credentialsSection = document.querySelector('.credentials') || document.querySelector('section:last-of-type');
+    const logoutBtn = document.querySelector('a[href*="logout"], a[href*="Logout"]');
+    const navLinks = document.querySelectorAll('a[href*="Architecture"], a[href*="Dashboard"], a[href*="Deep Dive"], a[href*="Tickets"]');
     
-    // Hide credentials function
+    // Fixed selector - capital C for Credentials
+    const credentialsSection = document.querySelector('.Credentials') || 
+                               document.querySelector('section:last-of-type');
+    
     function hideCredentials() {
         if (credentialsSection) {
             credentialsSection.style.display = 'none';
         }
     }
     
-    // Hide on logout click
     if (logoutBtn) {
         logoutBtn.addEventListener('click', hideCredentials);
     }
     
-    // Hide on navigation
     navLinks.forEach(link => {
         link.addEventListener('click', hideCredentials);
     });
 });
 </script>
+</body>
+</html>
 </body>
 </html>
