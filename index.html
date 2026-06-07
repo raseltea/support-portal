@@ -146,7 +146,11 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 .mbdy{padding:0 24px 24px}
 .mft{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 .al{font-size:11px;color:var(--blue);letter-spacing:.12em;margin-bottom:4px;text-transform:uppercase;font-weight:600}
-/* MOBILE */
+
+  /* LOGIN SCREEN */
+.login-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center}
+.login-card{background:var(--surface);padding:40px;border-radius:8px;box-shadow:var(--sm);width:100%;max-width:400px;border:1px solid var(--border);animation:fadeUp .3s ease}
+  /* MOBILE */
 #sov{display:none;position:fixed;inset:0;background:rgba(9,30,66,.5);z-index:49}
 #hbg{display:none;background:transparent;border:none;cursor:pointer;padding:6px;border-radius:4px;flex-direction:column;gap:5px;flex-shrink:0;align-self:center}
 #hbg span{display:block;width:18px;height:2px;background:var(--text);border-radius:1px}
@@ -164,6 +168,29 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 </style>
 </head>
 <body>
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" class="login-overlay">
+  <div class="login-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div class="logo" style="width:32px;height:32px;font-size:16px">EP</div>
+      <div>
+        <div style="font-family:'Charlie Display',sans-serif;font-size:20px;font-weight:700">Edge Platform</div>
+        <div style="font-size:12px;color:var(--sub)">Sign in to your account</div>
+      </div>
+    </div>
+    <div id="login-error" style="display:none;background:var(--rbg);color:var(--red);padding:10px;border-radius:4px;font-size:13px;margin-bottom:16px;border:1px solid rgba(202,53,33,0.2)">Invalid username or password</div>
+    <div style="margin-bottom:16px">
+      <label class="fl">Username</label>
+      <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div style="margin-bottom:24px">
+      <label class="fl">Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn bp" style="width:100%;justify-content:center" onclick="doLogin()">Log in</button>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted)">Demo credentials: admin / admin</div>
+  </div>
+</div>
 <div id="app">
 <div id="sov" onclick="closeSB()"></div>
 <div id="cbtn" onclick="toggleCol()">◀</div>
@@ -184,7 +211,7 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     <div class="su"><div class="av">YO</div><div class="sun"><div style="color:#fff;font-size:12px;font-weight:500">You</div><div style="font-size:11px">Manage account</div></div></div>
   </div>
 </nav>
-
+<button class="btn bd bsm" onclick="doLogout()" style="margin-right:8px">Logout</button>
 <div id="main">
   <div id="topbar">
     <button id="hbg" onclick="toggleSB()"><span></span><span></span><span></span></button>
@@ -845,6 +872,43 @@ window.bupd = function(s) {
     sel = []; // Clear selection
     rlist();  // Refresh the list
 };
+
+  // === AUTHENTICATION ===
+function checkAuth() {
+    var isLoggedIn = sessionStorage.getItem('ep_logged_in') === 'true';
+    document.getElementById('login-overlay').style.display = isLoggedIn ? 'none' : 'flex';
+    document.getElementById('app').style.display = isLoggedIn ? 'flex' : 'none';
+}
+
+function doLogin() {
+    var u = document.getElementById('login-user').value.trim();
+    var p = document.getElementById('login-pass').value.trim();
+    
+    // CHANGE THESE TO YOUR DESIRED CREDENTIALS
+    if (u === 'admin' && p === 'admin') {
+        sessionStorage.setItem('ep_logged_in', 'true');
+        checkAuth();
+    } else {
+        var err = document.getElementById('login-error');
+        err.style.display = 'block';
+        setTimeout(function(){ err.style.display = 'none'; }, 3000);
+    }
+}
+
+function doLogout() {
+    sessionStorage.removeItem('ep_logged_in');
+    location.reload();
+}
+
+// Allow pressing "Enter" to login
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('login-overlay').style.display === 'flex') {
+        doLogin();
+    }
+});
+
+// Run auth check on load
+checkAuth();
 </script>
 </body>
 </html>
