@@ -1064,5 +1064,30 @@ function doLogin() {
     }
 }
 </script>
+<script>
+// Hide credentials when clicking logout or navigating away
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.querySelector('a[href*="logout"], .logout');
+    const navLinks = document.querySelectorAll('nav a, .dashboard-link, .deep-dive-link');
+    const credentialsSection = document.querySelector('.credentials') || document.querySelector('section:last-of-type');
+    
+    // Hide credentials function
+    function hideCredentials() {
+        if (credentialsSection) {
+            credentialsSection.style.display = 'none';
+        }
+    }
+    
+    // Hide on logout click
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', hideCredentials);
+    }
+    
+    // Hide on navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', hideCredentials);
+    });
+});
+</script>
 </body>
 </html>
