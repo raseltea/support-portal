@@ -377,27 +377,31 @@ function fetchAT(){
         var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
         if(dels.indexOf(tid)!==-1)return;
         var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
+        
+        // ALWAYS check localStorage first
+        var lsStatus='';
+        try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
+        
         if(existing){
-          // Check localStorage for locally-set status first (takes priority)
-          try{var ls=localStorage.getItem('status_'+tid);if(ls)existing.status=ls;}catch(e){}
-          // If no local override, use Airtable status
-          if(f.Status&&!localStorage.getItem('status_'+tid)){
-            existing.status={Open:'open','In Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||existing.status;
-          }
+          if(lsStatus){existing.status=lsStatus;}
+          else if(f.Status){existing.status={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||existing.status;}
           return;
         }
-        // Load image from localStorage if available
+        
+        // For new tickets - localStorage takes priority
+        var finalStatus='open';
+        if(lsStatus){
+          finalStatus=lsStatus;
+        }else if(f.Status){
+          finalStatus={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||'open';
+        }
+        
         var imgData='',imgName=f.Attachment||'';
         try{var stored=localStorage.getItem('img_'+tid);if(stored){var parsed=JSON.parse(stored);imgData=parsed.data||'';imgName=parsed.name||imgName;}}catch(e){}
-        // Check for locally persisted status
-        var persistedStatus='open';
-        try{var ps=localStorage.getItem('status_'+tid);if(ps)persistedStatus=ps;
-          else if(f.Status)persistedStatus={Open:'open','In Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||'open';
-        }catch(e){if(f.Status)persistedStatus={Open:'open','In Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||'open';}
-        // Load Cloudinary image URL from Airtable
         var imgUrl=f.ImageURL||'';
         if(!imgUrl){try{var si=localStorage.getItem('img_'+tid);if(si){var pi=JSON.parse(si);imgUrl=pi.url||pi.data||'';imgName=pi.name||imgName;}}catch(e){}}
-        tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:persistedStatus,created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgUrl||imgData});
+        
+        tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:finalStatus,created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgUrl||imgData});
       });
       updBadge();
       if(document.getElementById('tp-sup').classList.contains('active'))rlist();
