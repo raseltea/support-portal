@@ -208,7 +208,13 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
   <div class="ni" data-tab="sup" onclick="ST('sup',this)"><span class="nicon">◉</span><span class="nl">My Tickets</span><span class="nbadge" id="badge">0</span></div>
   <div class="sp"></div>
   <div class="sbot">
-    <div class="su"><div class="av">YO</div><div class="sun"><div style="color:#fff;font-size:12px;font-weight:500">You</div><div style="font-size:11px">Manage account</div></div></div>
+    <div class="su" style="cursor:pointer" onclick="showAccount()">
+  <div class="av" id="sidebar-av">YO</div>
+  <div class="sun">
+    <div style="color:#fff;font-size:12px;font-weight:500" id="sidebar-user">You</div>
+    <div style="font-size:11px">Manage account</div>
+  </div>
+</div>
   </div>
 </nav>
 <button class="btn bd bsm" onclick="doLogout()" style="margin-right:8px">Logout</button>
@@ -221,11 +227,16 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     </div>
     <div style="flex:1"></div>
     <button class="btn bd" style="font-size:12px;padding:5px 10px" id="tba" onclick="TBA()">+ Create</button>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)">
-      <span class="dot dp" style="background:var(--green);box-shadow:0 0 0 3px rgba(31,132,90,.2)"></span>
-      <span>1,994 online</span>
-    </div>
-    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">YO</div>
+   <!-- Logout Button -->
+<button class="btn bd bsm" onclick="doLogout()" style="margin-right:8px">Logout</button>
+
+<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)">
+  <span class="dot dp" style="background:var(--green);box-shadow:0 0 0 3px rgba(31,132,90,.2)"></span>
+  <span>1,994 online</span>
+</div>
+
+<!-- Avatar with ID added -->
+<div id="topbar-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;overflow:hidden">YO</div>
   </div>
 
   <div id="page">
@@ -275,6 +286,44 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     </div>
   </div>
 </div>
+</div>
+  
+  <!-- ACCOUNT -->
+<div id="tp-account" class="tp">
+  <div style="max-width:600px;margin:0 auto">
+    <button class="btn bs bsm" style="margin-bottom:12px;padding-left:0" onclick="ST('arch', document.querySelector('[data-tab=\'arch\']'))">‹ Back to dashboard</button>
+    <h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Account Settings</h1>
+    <p style="color:var(--sub);font-size:14px;margin-bottom:24px">Manage your profile and security credentials</p>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Profile Picture</div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div id="acc-av-preview" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;overflow:hidden">YO</div>
+        <div>
+          <label class="btn bd bsm" style="cursor:pointer">
+            Upload Image
+            <input type="file" id="acc-img-input" accept="image/*" style="display:none" onchange="handleAccImg(event)">
+          </label>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">JPG, PNG or GIF. Max 2MB.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Credentials</div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Username</label>
+        <input type="text" id="acc-username" placeholder="admin">
+      </div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Password</label>
+        <input type="password" id="acc-password" placeholder="••••••••">
+      </div>
+    </div>
+
+    <div id="acc-msg" style="display:none;background:var(--gbg);color:var(--green);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;border:1px solid rgba(31,132,90,0.2)">✓ Settings saved successfully!</div>
+    <button class="btn bp" onclick="saveAccount()">Save changes</button>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -909,6 +958,112 @@ document.addEventListener('keydown', function(e) {
 
 // Run auth check on load
 checkAuth();
+// === ACCOUNT MANAGEMENT ===
+function showAccount() {
+    // Hide all tabs and show account page
+    document.querySelectorAll('.tp').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+    document.getElementById('tp-account').classList.add('active');
+    document.getElementById('bc').textContent = 'Account Settings';
+
+    // Load current settings
+    const savedUser = localStorage.getItem('ep_user') || 'admin';
+    const savedPass = localStorage.getItem('ep_pass') || 'admin';
+    const savedImg = localStorage.getItem('ep_img') || '';
+
+    document.getElementById('acc-username').value = savedUser;
+    document.getElementById('acc-password').value = savedPass;
+
+    updateAccPreview(savedUser, savedImg);
+}
+
+function updateAccPreview(user, img) {
+    const initials = user ? user.substring(0, 2).toUpperCase() : 'YO';
+    const preview = document.getElementById('acc-av-preview');
+    const sidebarAv = document.getElementById('sidebar-av');
+    const topbarAv = document.getElementById('topbar-av');
+    const sidebarUser = document.getElementById('sidebar-user');
+
+    // Update Account Page Preview
+    if (img) {
+        preview.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+        preview.innerHTML = initials;
+    }
+
+    // Update Sidebar Avatar
+    if (img) {
+        sidebarAv.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+        sidebarAv.innerHTML = initials;
+    }
+    sidebarUser.textContent = user || 'You';
+
+    // Update Topbar Avatar
+    if (img) {
+        topbarAv.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+        topbarAv.innerHTML = initials;
+    }
+}
+
+function handleAccImg(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert('File is too large! Max 2MB.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        localStorage.setItem('ep_img', e.target.result);
+        const user = document.getElementById('acc-username').value;
+        updateAccPreview(user, e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+function saveAccount() {
+    const user = document.getElementById('acc-username').value.trim();
+    const pass = document.getElementById('acc-password').value.trim();
+
+    if (!user || !pass) {
+        alert('Username and password cannot be empty.');
+        return;
+    }
+
+    localStorage.setItem('ep_user', user);
+    localStorage.setItem('ep_pass', pass);
+
+    // Show success message
+    const msg = document.getElementById('acc-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+
+    // Update UI immediately
+    updateAccPreview(user, localStorage.getItem('ep_img') || '');
+}
+
+// UPDATE LOGIN FUNCTION TO USE SAVED CREDENTIALS
+// Replace your existing doLogin() function with this updated one:
+function doLogin() {
+    var u = document.getElementById('login-user').value.trim();
+    var p = document.getElementById('login-pass').value.trim();
+
+    const savedUser = localStorage.getItem('ep_user') || 'admin';
+    const savedPass = localStorage.getItem('ep_pass') || 'admin';
+
+    if (u === savedUser && p === savedPass) {
+        sessionStorage.setItem('ep_logged_in', 'true');
+        checkAuth();
+    } else {
+        var err = document.getElementById('login-error');
+        err.style.display = 'block';
+        setTimeout(function(){ err.style.display = 'none'; }, 3000);
+    }
+}
 </script>
 </body>
 </html>
