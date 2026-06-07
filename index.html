@@ -811,6 +811,40 @@ setInterval(function(){
     fetchAT();
   }
 },30000);
+  // Force define bupd globally at the end of the script
+window.bupd = function(s) {
+    console.log('Bulk update triggered for status:', s);
+    console.log('Selected tickets:', sel);
+    
+    if (sel.length === 0) {
+        alert('Please select a ticket first.');
+        return;
+    }
+
+    sel.forEach(function(id) {
+        var t = tickets.find(function(x) { return x.id === id; });
+        if (t) {
+            t.status = s;
+            
+            // 1. Save to LocalStorage (This makes it persist after refresh)
+            try { localStorage.setItem('status_' + id, s); } catch (e) {}
+            
+            // 2. Update Airtable (Using 'Progress' to match your screenshot)
+            if (t.aid) {
+                var map = { 'open': 'Open', 'in-progress': 'Progress', 'resolved': 'Resolved', 'closed': 'Closed' };
+                var atVal = map[s] || s;
+                fetch('https://api.airtable.com/v0/' + AB + '/' + ATB + '/' + t.aid, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + AT, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fields: { Status: atVal } })
+                });
+            }
+        }
+    });
+    
+    sel = []; // Clear selection
+    rlist();  // Refresh the list
+};
 </script>
 </body>
 </html>
