@@ -378,7 +378,7 @@ function fetchAT(){
         if(dels.indexOf(tid)!==-1)return;
         var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
         
-        // ALWAYS check localStorage first
+        // ALWAYS check localStorage first, regardless of existing or new
         var lsStatus='';
         try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
         
@@ -388,7 +388,7 @@ function fetchAT(){
           return;
         }
         
-        // For new tickets - localStorage takes priority
+        // For new tickets from Airtable
         var finalStatus='open';
         if(lsStatus){
           finalStatus=lsStatus;
@@ -586,22 +586,13 @@ function qupd(id,aid,s){
     rlist();
   }
 }
-function bupd(s){sel.forEach(function(id){var t=tickets.find(function(x){return x.id===id;});if(t)t.status=s;});sel=[];rlist();}
-function bdel(){
-  if(!confirm('Delete '+sel.length+' ticket(s)?'))return;
-  sel.forEach(function(id){
-    if(dels.indexOf(id)===-1)dels.push(id);
-    // Delete from Airtable
-    var t=tickets.find(function(x){return x.id===id;});
-    if(t&&t.aid){
-      fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+t.aid,{
-        method:'DELETE',
-        headers:{'Authorization':'Bearer '+AT}
-      }).catch(function(e){console.error('AT delete error:',e);});
-    }
+function updATstatus(aid,s){
+  if(!aid)return;
+  fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+aid,{
+    method:'PATCH',
+    headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},
+    body:JSON.stringify({fields:{Status:{open:'Open','in-progress':'Progress',resolved:'Resolved',closed:'Closed'}[s]||s}})
   });
-  tickets=tickets.filter(function(t){return sel.indexOf(t.id)===-1;});
-  sel=[];updBadge();rlist();
 }
 function dtk(id){
   if(!confirm('Delete this ticket?'))return;
@@ -626,7 +617,7 @@ function dtk(id){
   }
   rlist();
 }
-
+  
 // === NEW TICKET ===
 function showNew(){ns=1;nf={type:"incident",title:"",priority:"High",desc:"",att:"",ad:""};document.getElementById('sv-list').style.display='none';document.getElementById('sv-det').style.display='none';document.getElementById('sv-new').style.display='block';rnew();}
 function rnew(){
