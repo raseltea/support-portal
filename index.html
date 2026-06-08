@@ -1066,36 +1066,52 @@ function doLogin() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Find credentials section
-    const allDivs = document.querySelectorAll('div, section');
-    let credentialsContainer = null;
+    // Find the Account Settings section (the whole thing)
+    const allHeadings = document.querySelectorAll('h1, h2, h3');
+    let accountSettingsSection = null;
     
-    for (let div of allDivs) {
-        if (div.textContent.includes('CREDENTIALS') && 
-            div.textContent.includes('Username') && 
-            div.textContent.includes('Password')) {
-            credentialsContainer = div;
+    for (let heading of allHeadings) {
+        if (heading.textContent.trim() === 'Account Settings') {
+            // Get the parent container that holds the entire account settings
+            accountSettingsSection = heading.closest('section') || heading.parentElement;
             break;
         }
     }
     
-    // Check if on Account Settings page
-    const pageTitle = document.querySelector('h1, h2');
-    const isAccountPage = pageTitle && pageTitle.textContent.includes('Account Settings');
+    // Check current page - look for Account Settings heading
+    const hasAccountHeading = Array.from(allHeadings).some(h => h.textContent.trim() === 'Account Settings');
     
-    // Hide if not on account page
-    if (credentialsContainer && !isAccountPage) {
-        credentialsContainer.style.display = 'none';
+    // Also check by looking at visible content
+    const currentPageContent = document.body.textContent;
+    const isOnAccountPage = currentPageContent.includes('Account Settings') && 
+                            currentPageContent.includes('Manage your profile');
+    
+    // Hide entire account settings section if not on account page
+    if (accountSettingsSection && !isOnAccountPage) {
+        accountSettingsSection.style.display = 'none';
+    }
+    
+    // Alternative: Hide credentials form specifically
+    const saveBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.trim() === 'Save changes');
+    if (saveBtn && !isOnAccountPage) {
+        const credentialsForm = saveBtn.closest('form') || saveBtn.parentElement;
+        if (credentialsForm) {
+            credentialsForm.style.display = 'none';
+        }
     }
     
     // Hide on navigation
-    const navLinks = document.querySelectorAll('nav a, .nav-link');
+    const navLinks = document.querySelectorAll('a');
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (credentialsContainer) {
-                credentialsContainer.style.display = 'none';
-            }
-        });
+        const linkText = link.textContent.trim();
+        if (linkText === 'Architecture' || linkText === 'Dashboard' || 
+            linkText === 'Tickets' || linkText === 'Deep Dive' || linkText === 'Logout') {
+            link.addEventListener('click', function() {
+                if (accountSettingsSection) {
+                    accountSettingsSection.style.display = 'none';
+                }
+            });
+        }
     });
 });
 </script>
