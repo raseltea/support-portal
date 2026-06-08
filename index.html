@@ -1066,18 +1066,12 @@ function doLogin() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Check current page - only show credentials on account page
-    const currentPage = window.location.href;
-    const isAccountPage = currentPage.includes('account') || 
-                          currentPage.includes('settings') || 
-                          currentPage.includes('manage');
-    
-    // Find credentials section by looking for the "Credentials" text
+    // Find credentials section
     const allDivs = document.querySelectorAll('div, section');
     let credentialsSection = null;
     
     for (let div of allDivs) {
-        if (div.textContent.includes('CREDENTIALS') && 
+        if (div.textContent.includes('Credentials') && 
             div.textContent.includes('Username') && 
             div.textContent.includes('Password')) {
             credentialsSection = div;
@@ -1085,32 +1079,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Hide credentials if not on account page
+    // Check if we're on Account Settings page
+    const pageTitle = document.querySelector('h1, h2');
+    const isAccountPage = pageTitle && pageTitle.textContent.includes('Account Settings');
+    
+    // Hide credentials if NOT on account page
     if (credentialsSection && !isAccountPage) {
         credentialsSection.style.display = 'none';
-        credentialsSection.style.visibility = 'hidden';
-        credentialsSection.style.height = '0';
-        credentialsSection.style.overflow = 'hidden';
     }
     
-    // Hide on navigation
-    const navLinks = document.querySelectorAll('a[href*="Architecture"], a[href*="Dashboard"], a[href*="Tickets"], a[href*="Deep Dive"]');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (credentialsSection) {
-                credentialsSection.style.display = 'none';
-            }
-        });
-    });
-    
-    // Hide on logout
-    const logoutBtn = document.querySelector('a[href*="logout"], a[href*="Logout"]');
-    if (logoutBtn && credentialsSection) {
-        logoutBtn.addEventListener('click', function() {
-            credentialsSection.style.display = 'none';
+    // Show credentials when clicking "Manage account"
+    const manageLink = Array.from(document.querySelectorAll('a')).find(a => a.textContent.includes('Manage account'));
+    if (manageLink && credentialsSection) {
+        manageLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            credentialsSection.style.display = 'block';
         });
     }
 });
+
 </script>
     }
     
