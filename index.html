@@ -1066,49 +1066,60 @@ function doLogin() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Find the Account Settings section (the whole thing)
-    const allHeadings = document.querySelectorAll('h1, h2, h3');
-    let accountSettingsSection = null;
+    // Find the credentials section by looking for "Save changes" button
+    const allButtons = document.querySelectorAll('button');
+    let saveChangesBtn = null;
     
-    for (let heading of allHeadings) {
-        if (heading.textContent.trim() === 'Account Settings') {
-            // Get the parent container that holds the entire account settings
-            accountSettingsSection = heading.closest('section') || heading.parentElement;
+    for (let btn of allButtons) {
+        if (btn.textContent.trim() === 'Save changes') {
+            saveChangesBtn = btn;
             break;
         }
     }
     
-    // Check current page - look for Account Settings heading
-    const hasAccountHeading = Array.from(allHeadings).some(h => h.textContent.trim() === 'Account Settings');
-    
-    // Also check by looking at visible content
-    const currentPageContent = document.body.textContent;
-    const isOnAccountPage = currentPageContent.includes('Account Settings') && 
-                            currentPageContent.includes('Manage your profile');
-    
-    // Hide entire account settings section if not on account page
-    if (accountSettingsSection && !isOnAccountPage) {
-        accountSettingsSection.style.display = 'none';
-    }
-    
-    // Alternative: Hide credentials form specifically
-    const saveBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.trim() === 'Save changes');
-    if (saveBtn && !isOnAccountPage) {
-        const credentialsForm = saveBtn.closest('form') || saveBtn.parentElement;
-        if (credentialsForm) {
-            credentialsForm.style.display = 'none';
+    // Get the parent container of the credentials form
+    let credentialsContainer = null;
+    if (saveChangesBtn) {
+        // Go up the DOM tree to find the main container
+        credentialsContainer = saveChangesBtn.closest('div') || saveChangesBtn.parentElement;
+        
+        // Keep going up until we find a reasonable container
+        let parent = credentialsContainer;
+        for (let i = 0; i < 5 && parent; i++) {
+            parent = parent.parentElement;
+            if (parent && (parent.className.includes('card') || parent.className.includes('section') || parent.tagName === 'SECTION')) {
+                credentialsContainer = parent;
+                break;
+            }
         }
     }
     
-    // Hide on navigation
+    // Check if we're on the account page by checking URL or active nav
+    const currentPath = window.location.href;
+    const manageAccountLink = document.querySelector('a[href*="account"], a[href*="manage"]');
+    const isAccountPage = currentPath.includes('account') || 
+                          (manageAccountLink && manageAccountLink.closest('.active'));
+    
+    // Also check if "Account Settings" text is visible on page
+    const allText = document.body.textContent;
+    const hasAccountSettings = allText.includes('Account Settings') && allText.includes('Manage your profile');
+    
+    // Hide credentials if not on account page
+    if (credentialsContainer && !hasAccountSettings) {
+        credentialsContainer.style.display = 'none';
+        credentialsContainer.style.visibility = 'hidden';
+        credentialsContainer.style.height = '0';
+        credentialsContainer.style.overflow = 'hidden';
+    }
+    
+    // Hide when clicking navigation
     const navLinks = document.querySelectorAll('a');
     navLinks.forEach(link => {
-        const linkText = link.textContent.trim();
-        if (linkText === 'Architecture' || linkText === 'Dashboard' || 
-            linkText === 'Tickets' || linkText === 'Deep Dive' || linkText === 'Logout') {
+        const text = link.textContent.trim();
+        if (['Architecture', 'Dashboard', 'Tickets', 'Deep Dive', 'Logout'].includes(text)) {
             link.addEventListener('click', function() {
-                if (accountSettingsSection) {
-                    accountSettingsSection.style.display = 'none';
+                if (credentialsContainer) {
+                    credentialsContainer.style.display = 'none';
                 }
             });
         }
