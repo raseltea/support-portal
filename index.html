@@ -1064,31 +1064,54 @@ function doLogin() {
     }
 }
 </script>
- <script>
-// Hide credentials section by default
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Find the credentials section - look for the heading "CREDENTIALS"
-    const allElements = document.querySelectorAll('h3, h4, h5, .section-title, label');
-    let credentialsContainer = null;
+    // Check current page - only show credentials on account page
+    const currentPage = window.location.href;
+    const isAccountPage = currentPage.includes('account') || 
+                          currentPage.includes('settings') || 
+                          currentPage.includes('manage');
     
-    for (let el of allElements) {
-        if (el.textContent.trim().toUpperCase() === 'CREDENTIALS') {
-            credentialsContainer = el.closest('section') || el.closest('div') || el.parentElement;
+    // Find credentials section by looking for the "Credentials" text
+    const allDivs = document.querySelectorAll('div, section');
+    let credentialsSection = null;
+    
+    for (let div of allDivs) {
+        if (div.textContent.includes('CREDENTIALS') && 
+            div.textContent.includes('Username') && 
+            div.textContent.includes('Password')) {
+            credentialsSection = div;
             break;
         }
     }
     
-    // Hide it immediately
-    if (credentialsContainer) {
-        credentialsContainer.style.display = 'none';
+    // Hide credentials if not on account page
+    if (credentialsSection && !isAccountPage) {
+        credentialsSection.style.display = 'none';
+        credentialsSection.style.visibility = 'hidden';
+        credentialsSection.style.height = '0';
+        credentialsSection.style.overflow = 'hidden';
     }
     
-    // Show only when clicking "Manage account"
-    const manageAccountBtn = document.querySelector('a[href*="account"], .manage-account');
-    if (manageAccountBtn && credentialsContainer) {
-        manageAccountBtn.addEventListener('click', function() {
-            credentialsContainer.style.display = 'block';
+    // Hide on navigation
+    const navLinks = document.querySelectorAll('a[href*="Architecture"], a[href*="Dashboard"], a[href*="Tickets"], a[href*="Deep Dive"]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (credentialsSection) {
+                credentialsSection.style.display = 'none';
+            }
         });
+    });
+    
+    // Hide on logout
+    const logoutBtn = document.querySelector('a[href*="logout"], a[href*="Logout"]');
+    if (logoutBtn && credentialsSection) {
+        logoutBtn.addEventListener('click', function() {
+            credentialsSection.style.display = 'none';
+        });
+    }
+});
+</script>
     }
     
     // Hide when clicking any nav link
