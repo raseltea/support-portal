@@ -1068,40 +1068,27 @@ function doLogin() {
 document.addEventListener('DOMContentLoaded', function() {
     // Find credentials section
     const allDivs = document.querySelectorAll('div, section');
-    let credentialsSection = null;
+    let credentialsContainer = null;
     
     for (let div of allDivs) {
-        if (div.textContent.includes('Credentials') && 
+        if (div.textContent.includes('CREDENTIALS') && 
             div.textContent.includes('Username') && 
             div.textContent.includes('Password')) {
-            credentialsSection = div;
+            credentialsContainer = div;
             break;
         }
     }
     
-    // Check if we're on Account Settings page
+    // Check if on Account Settings page
     const pageTitle = document.querySelector('h1, h2');
     const isAccountPage = pageTitle && pageTitle.textContent.includes('Account Settings');
     
-    // Hide credentials if NOT on account page
-    if (credentialsSection && !isAccountPage) {
-        credentialsSection.style.display = 'none';
+    // Hide if not on account page
+    if (credentialsContainer && !isAccountPage) {
+        credentialsContainer.style.display = 'none';
     }
     
-    // Show credentials when clicking "Manage account"
-    const manageLink = Array.from(document.querySelectorAll('a')).find(a => a.textContent.includes('Manage account'));
-    if (manageLink && credentialsSection) {
-        manageLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            credentialsSection.style.display = 'block';
-        });
-    }
-});
-
-</script>
-    }
-    
-    // Hide when clicking any nav link
+    // Hide on navigation
     const navLinks = document.querySelectorAll('nav a, .nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
@@ -1110,33 +1097,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
-</script>
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== DEBUGGING CREDENTIALS HIDE ===');
-    
-    // Check what we're finding
-    const credentialsSection = document.querySelector('.Credentials') || 
-                               document.querySelector('section:last-of-type') ||
-                               document.querySelector('form');
-    
-    console.log('Credentials section found:', credentialsSection);
-    console.log('Credentials HTML:', credentialsSection ? credentialsSection.outerHTML.substring(0, 200) : 'NOT FOUND');
-    
-    // Find all sections
-    const allSections = document.querySelectorAll('section');
-    console.log('Total sections found:', allSections.length);
-    allSections.forEach((section, index) => {
-        console.log(`Section ${index}:`, section.className, section.id);
-    });
-    
-    // Test hiding immediately
-    if (credentialsSection) {
-        console.log('Attempting to hide credentials...');
-        credentialsSection.style.display = 'none';
-        console.log('Hide attempted');
-    }
 });
 </script>
 </body>
