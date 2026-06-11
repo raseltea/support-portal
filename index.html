@@ -413,8 +413,7 @@ var svcs = [
   {id:"s2",name:"confluence-eu",product:"confluence",domain:"confluence-eu.atlassian.com",status:"active",region:"eu-west-1",rps:1800},
   {id:"s3",name:"bitbucket-apac",product:"bitbucket",domain:"bitbucket-ap.atlassian.com",status:"provisioning",region:"ap-southeast-1",rps:0},
 ];
-var tf="all",ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;
-
+var tf="all",ttype="all",ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;
 // === SIDEBAR ===
 function toggleCol(){scol=!scol;document.getElementById('sidebar').classList.toggle('col',scol);var b=document.getElementById('cbtn');b.innerHTML=scol?'▶':'◀';b.style.left=scol?'40px':'228px';}
 function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sov').classList.toggle('open');}
@@ -593,7 +592,12 @@ function rlist(){
   document.getElementById('sv-new').style.display='none';
   document.getElementById('sv-det').style.display='none';
   updBadge();
-  var filt=tickets.filter(function(t){return (tf==='all'||t.status===tf)&&(!ts||t.title.toLowerCase().includes(ts.toLowerCase())||t.id.toLowerCase().includes(ts.toLowerCase()));});
+  var filt=tickets.filter(function(t){
+  var statusMatch = (tf==='all'||t.status===tf);
+  var typeMatch = (ttype==='all'||t.type===ttype);
+  var searchMatch = (!ts||t.title.toLowerCase().includes(ts.toLowerCase())||t.id.toLowerCase().includes(ts.toLowerCase()));
+  return statusMatch && typeMatch && searchMatch;
+});
   var op=tickets.filter(function(t){return t.status==='open';}).length;
   var ip=tickets.filter(function(t){return t.status==='in-progress';}).length;
   var rs=tickets.filter(function(t){return t.status==='resolved';}).length;
@@ -631,20 +635,31 @@ function rlist(){
   });}
   var ah='';
   [{id:"AT-1041",e:"Status changed to In Progress",t:"2h ago",a:"Maya R."},{id:"AT-1038",e:"Ticket opened",t:"5h ago",a:"You"},{id:"AT-1031",e:"Marked as Done",t:"1d ago",a:"Sam K."}].forEach(function(a){ah+='<div class="ai"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--sub)">'+a.e+'</span><span style="color:var(--muted)">'+a.a+'</span><span style="color:var(--muted);font-size:11px">'+a.t+'</span></div>';});
-  document.getElementById('sv-list').innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="al">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1><p style="color:var(--sub);font-size:14px">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
+   var sidebar = '<div style="width:200px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px">'
+    +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:4px 8px">Queues</div>'
+    +'<div class="ni'+(ttype==='all'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
+    +'<div class="ni'+(ttype==='feature'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
+    +'<div class="ni'+(ttype==='incident'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'incident\';rlist()"> Incidents</div>'
+    +'<div class="ni'+(ttype==='degraded'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
+    +'<div class="ni'+(ttype==='billing'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'billing\';rlist()">🟣 Changes</div>'
+    +'</div>';
+
+  var content = '<div style="flex:1;min-width:0">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="al">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1><p style="color:var(--sub);font-size:14px">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
     +'<div class="sgrid" style="margin-bottom:24px"><div class="sc"><div class="sv" style="color:var(--blue)">'+op+'</div><div class="sl">Open</div></div><div class="sc"><div class="sv" style="color:var(--amber)">'+ip+'</div><div class="sl">In Progress</div></div><div class="sc"><div class="sv" style="color:var(--green)">'+rs+'</div><div class="sl">Resolved</div></div><div class="sc"><div class="sv" style="color:var(--sub)">'+tickets.length+'</div><div class="sl">Total</div></div></div>'
     +'<div class="fbar"><div class="sw" style="max-width:280px"><span class="si">⌕</span><input type="text" placeholder="Search tickets..." value="'+ts+'" oninput="ts=this.value;rlist()"></div>'
     +'<div class="fc'+(tf==='all'?' active':'')+'" onclick="tf=\'all\';rlist()">All tickets</div>'
     +'<div class="fc'+(tf==='open'?' active':'')+'" onclick="tf=\'open\';rlist()">Open</div>'
     +'<div class="fc'+(tf==='in-progress'?' active':'')+'" onclick="tf=\'in-progress\';rlist()">In progress</div>'
     +'<div class="fc'+(tf==='resolved'?' active':'')+'" onclick="tf=\'resolved\';rlist()">Resolved</div>'
-    +'<div style="margin-left:auto;position:relative"><button class="btn bd bsm" onclick="tcp()">⚙ Columns ▾</button><div id="cpick" style="display:none;position:absolute;right:0;top:36px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;box-shadow:var(--sm);z-index:100">'+pk+'</div></div></div>'
+    +'<div style="margin-left:auto;position:relative"><button class="btn bd bsm" onclick="tcp()">⚙ Columns </button><div id="cpick" style="display:none;position:absolute;right:0;top:36px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;box-shadow:var(--sm);z-index:100">'+pk+'</div></div></div>'
     +bk
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px"><table class="jtbl" style="font-size:13px"><thead><tr>'+th+'</tr></thead><tbody>'+tb+'</tbody></table></div>'
     +'<div style="font-size:12px;font-weight:600;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>'
-    +'<div class="card" style="padding:0 16px">'+ah+'</div>';
-}
+    +'<div class="card" style="padding:0 16px">'+ah+'</div>'
+    + '</div>';
+
+  document.getElementById('sv-list').innerHTML = '<div style="display:flex;gap:24px;align-items:start">' + sidebar + content + '</div>';
 function tcp(){var p=document.getElementById('cpick');if(p)p.style.display=p.style.display==='none'?'block':'none';}
 function tcol(c,v){if(v&&vcols.indexOf(c)===-1)vcols.push(c);else if(!v)vcols=vcols.filter(function(x){return x!==c;});rlist();}
 function tsel(id,v){if(v&&sel.indexOf(id)===-1)sel.push(id);else sel=sel.filter(function(x){return x!==id;});rlist();}
