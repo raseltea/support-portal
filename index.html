@@ -635,13 +635,14 @@ function rlist(){
   });}
   var ah='';
   [{id:"AT-1041",e:"Status changed to In Progress",t:"2h ago",a:"Maya R."},{id:"AT-1038",e:"Ticket opened",t:"5h ago",a:"You"},{id:"AT-1031",e:"Marked as Done",t:"1d ago",a:"Sam K."}].forEach(function(a){ah+='<div class="ai"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--sub)">'+a.e+'</span><span style="color:var(--muted)">'+a.a+'</span><span style="color:var(--muted);font-size:11px">'+a.t+'</span></div>';});
-   var sidebar = '<div style="width:200px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px">'
+    var sidebar = '<div style="width:200px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px">'
     +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:4px 8px">Queues</div>'
-    +'<div class="ni'+(ttype==='all'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
-    +'<div class="ni'+(ttype==='feature'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
-    +'<div class="ni'+(ttype==='incident'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'incident\';rlist()"> Incidents</div>'
-    +'<div class="ni'+(ttype==='degraded'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
-    +'<div class="ni'+(ttype==='billing'?' active':'')+'" style="margin:2px 0;padding:7px 12px;font-size:13px;cursor:pointer" onclick="ttype=\'billing\';rlist()">🟣 Changes</div>'
+    +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:3px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
+    +'<div class="queue-link'+(ttype==='all'?' active':'')+'" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
+    +'<div class="queue-link'+(ttype==='feature'?' active':'')+'" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
+    +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()">🔴 Incidents</div>'
+    +'<div class="queue-link'+(ttype==='degraded'?' active':'')+'" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
+    +'<div class="queue-link'+(ttype==='billing'?' active':'')+'" onclick="ttype=\'billing\';rlist()">🟣 Changes</div>'
     +'</div>';
 
   var content = '<div style="flex:1;min-width:0">'
