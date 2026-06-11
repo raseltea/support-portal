@@ -660,6 +660,7 @@ function rlist(){
     + '</div>';
 
   document.getElementById('sv-list').innerHTML = '<div style="display:flex;gap:24px;align-items:start">' + sidebar + content + '</div>';
+  }
 function tcp(){var p=document.getElementById('cpick');if(p)p.style.display=p.style.display==='none'?'block':'none';}
 function tcol(c,v){if(v&&vcols.indexOf(c)===-1)vcols.push(c);else if(!v)vcols=vcols.filter(function(x){return x!==c;});rlist();}
 function tsel(id,v){if(v&&sel.indexOf(id)===-1)sel.push(id);else sel=sel.filter(function(x){return x!==id;});rlist();}
