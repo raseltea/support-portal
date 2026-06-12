@@ -413,8 +413,7 @@ var svcs = [
   {id:"s2",name:"confluence-eu",product:"confluence",domain:"confluence-eu.atlassian.com",status:"active",region:"eu-west-1",rps:1800},
   {id:"s3",name:"bitbucket-apac",product:"bitbucket",domain:"bitbucket-ap.atlassian.com",status:"provisioning",region:"ap-southeast-1",rps:0},
 ];
-var tf="all",ttype="all",ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;
-// === SIDEBAR ===
+var tf="all",ttype="all",customQueues=[],ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;// === SIDEBAR ===
 function toggleCol(){scol=!scol;document.getElementById('sidebar').classList.toggle('col',scol);var b=document.getElementById('cbtn');b.innerHTML=scol?'▶':'◀';b.style.left=scol?'40px':'228px';}
 function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sov').classList.toggle('open');}
 function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sov').classList.remove('open');}
@@ -594,8 +593,19 @@ function rlist(){
   updBadge();
   var filt=tickets.filter(function(t){
   var statusMatch = (tf==='all'||t.status===tf);
-  var typeMatch = (ttype==='all'||t.type===ttype);
   var searchMatch = (!ts||t.title.toLowerCase().includes(ts.toLowerCase())||t.id.toLowerCase().includes(ts.toLowerCase()));
+  
+  // Check custom queues
+  var typeMatch = true;
+  if (ttype !== 'all') {
+    var isCustomQueue = customQueues.find(function(q) { return q.id === ttype; });
+    if (isCustomQueue) {
+      typeMatch = isCustomQueue.tickets.indexOf(t.id) !== -1;
+    } else {
+      typeMatch = t.type === ttype;
+    }
+  }
+  
   return statusMatch && typeMatch && searchMatch;
 });
   var op=tickets.filter(function(t){return t.status==='open';}).length;
@@ -643,7 +653,17 @@ function rlist(){
     +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()">🔴 Incidents</div>'
     +'<div class="queue-link'+(ttype==='degraded'?' active':'')+'" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
     +'<div class="queue-link'+(ttype==='billing'?' active':'')+'" onclick="ttype=\'billing\';rlist()">🟣 Changes</div>'
-    +'</div>';
+      +(customQueues.length > 0 ? customQueues.map(function(q) {
+    return '<div class="queue-link'+(ttype===q.id?' active':'')+'" style="border-left-color:'+q.color+'" onclick="ttype=\''+q.id+'\';rlist()">'
+      +'<span style="width:8px;height:8px;border-radius:50%;background:'+q.color+';flex-shrink:0"></span>'
+      +'<span style="flex:1">'+q.name+'</span>'
+      +'<span style="font-size:11px;color:var(--muted)">'+q.tickets.length+'</span>'
+      +'</div>';
+  }).join('') : '')
+    +'<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
++'<button class="btn bd bsm" style="width:100%;font-size:12px" onclick="openQueueModal()">+ Create custom queue</button>'
++'</div>'
++'</div>';
 
   var content = '<div style="flex:1;min-width:0">'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="al">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1><p style="color:var(--sub);font-size:14px">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
@@ -1140,6 +1160,121 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+<!-- Custom Queue Modal -->
+<div id="queue-modal" style="display:none;position:fixed;inset:0;background:rgba(9,30,66,.5);z-index:200;align-items:center;justify-content:center">
+  <div class="mbox">
+    <div class="mhd"><h2>Create Custom Queue</h2><button class="mcl" onclick="closeQueueModal()">✕</button></div>
+    <div class="mbdy">
+      <div style="margin-bottom:16px">
+        <label class="fl">Queue Name</label>
+        <input type="text" id="queue-name" placeholder="e.g., My Team's Tickets">
+      </div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Color</label>
+        <select id="queue-color">
+          <option value="#0C66E4">Blue</option>
+          <option value="#1F845A">Green</option>
+          <option value="#CA3521">Red</option>
+          <option value="#974F0C">Amber</option>
+          <option value="#6E5DC6">Purple</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Description (optional)</label>
+        <input type="text" id="queue-desc" placeholder="Brief description">
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn bd" onclick="closeQueueModal()">Cancel</button>
+      <button class="btn bp" onclick="createCustomQueue()">Create Queue</button>
+    </div>
+  </div>
+</div>
+  <script>
+// Custom Queue Functions
+function openQueueModal() {
+  document.getElementById('queue-modal').style.display = 'flex';
+  document.getElementById('queue-name').value = '';
+  document.getElementById('queue-desc').value = '';
+}
+
+function closeQueueModal() {
+  document.getElementById('queue-modal').style.display = 'none';
+}
+
+function createCustomQueue() {
+  var name = document.getElementById('queue-name').value.trim();
+  var color = document.getElementById('queue-color').value;
+  var desc = document.getElementById('queue-desc').value.trim();
+  
+  if (!name) {
+    alert('Please enter a queue name');
+    return;
+  }
+  
+  var queue = {
+    id: 'queue_' + Date.now(),
+    name: name,
+    color: color,
+    desc: desc,
+    tickets: []
+  };
+  
+  customQueues.push(queue);
+  saveCustomQueues();
+  closeQueueModal();
+  rlist();
+}
+
+function saveCustomQueues() {
+  try {
+    localStorage.setItem('customQueues', JSON.stringify(customQueues));
+  } catch(e) {}
+}
+
+function loadCustomQueues() {
+  try {
+    var saved = localStorage.getItem('customQueues');
+    if (saved) {
+      customQueues = JSON.parse(saved);
+    }
+  } catch(e) {}
+}
+
+function deleteCustomQueue(queueId) {
+  if (confirm('Delete this queue? Tickets will return to the main list.')) {
+    customQueues = customQueues.filter(function(q) { return q.id !== queueId; });
+    saveCustomQueues();
+    rlist();
+  }
+}
+
+function assignTicketToQueue(ticketId, queueId) {
+  var ticket = tickets.find(function(t) { return t.id === ticketId; });
+  var queue = customQueues.find(function(q) { return q.id === queueId; });
+  
+  if (ticket && queue) {
+    customQueues.forEach(function(q) {
+      q.tickets = q.tickets.filter(function(tid) { return tid !== ticketId; });
+    });
+    queue.tickets.push(ticketId);
+    saveCustomQueues();
+    rlist();
+  }
+}
+
+function removeFromQueue(ticketId) {
+  customQueues.forEach(function(q) {
+    q.tickets = q.tickets.filter(function(tid) { return tid !== ticketId; });
+  });
+  saveCustomQueues();
+  rlist();
+}
+
+// Load custom queues on page load
+loadCustomQueues();
+</script>
 </script>
 </body>
 </html>
