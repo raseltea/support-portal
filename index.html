@@ -1121,19 +1121,6 @@ function saveAccount() {
     updateAccPreview(user, localStorage.getItem('ep_img') || '');
 }
 
-    if (!user || !pass) {
-        alert('Username and password cannot be empty.');
-        return;
-    }
-
-    localStorage.setItem('ep_user', user);
-    localStorage.setItem('ep_pass', pass);
-
-    // Show success message
-    const msg = document.getElementById('acc-msg');
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 3000);
-
     // Update UI immediately
     updateAccPreview(user, localStorage.getItem('ep_img') || '');
 }
