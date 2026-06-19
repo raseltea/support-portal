@@ -189,6 +189,7 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     </div>
     <button class="btn bp" style="width:100%;justify-content:center" onclick="doLogin()">Log in</button>
     <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted)">Demo credentials: admin / admin</div>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--blue);cursor:pointer" onclick="createAccount()">Create new account</div>
   </div>
 </div>
 <div id="app">
@@ -408,6 +409,32 @@ var TS = {
   "closed":{label:"Closed",loz:"lgr"},
 };
 var tickets = [];
+  // --- MULTI-USER SYSTEM ---
+function getUsers() {
+    try { 
+        var stored = localStorage.getItem('ep_users');
+        return stored ? JSON.parse(stored) : [{username:'admin', password:'admin'}]; 
+    } catch(e) { 
+        return [{username:'admin', password:'admin'}]; 
+    }
+}
+function saveUsers(users) { 
+    localStorage.setItem('ep_users', JSON.stringify(users)); 
+}
+function createAccount() {
+    var u = prompt("Enter new username:");
+    if (!u) return;
+    var p = prompt("Enter new password:");
+    if (!p) return;
+    var users = getUsers();
+    if (users.find(function(x){ return x.username === u; })) {
+        alert("User already exists!");
+        return;
+    }
+    users.push({username: u, password: p});
+    saveUsers(users);
+    alert("Account created! You can now log in with " + u);
+}
 var svcs = [
   {id:"s1",name:"jira-prod",product:"jira",domain:"jira.atlassian.com",status:"active",region:"us-east-1",rps:4200},
   {id:"s2",name:"confluence-eu",product:"confluence",domain:"confluence-eu.atlassian.com",status:"active",region:"eu-west-1",rps:1800},
@@ -1068,6 +1095,37 @@ function saveAccount() {
         return;
     }
 
+    // Update the user in our list
+    var users = getUsers();
+    var currentUser = sessionStorage.getItem('ep_current_user') || 'admin';
+    
+    // Find the user and update them
+    var userIndex = users.findIndex(function(u) { return u.username === currentUser; });
+    if (userIndex !== -1) {
+        users[userIndex].username = user;
+        users[userIndex].password = pass;
+        saveUsers(users);
+        sessionStorage.setItem('ep_current_user', user); // Update session
+    } else {
+        // Fallback if not found
+        localStorage.setItem('ep_user', user);
+        localStorage.setItem('ep_pass', pass);
+    }
+
+    // Show success message
+    const msg = document.getElementById('acc-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+
+    // Update UI immediately
+    updateAccPreview(user, localStorage.getItem('ep_img') || '');
+}
+
+    if (!user || !pass) {
+        alert('Username and password cannot be empty.');
+        return;
+    }
+
     localStorage.setItem('ep_user', user);
     localStorage.setItem('ep_pass', pass);
 
@@ -1081,16 +1139,19 @@ function saveAccount() {
 }
 
 // UPDATE LOGIN FUNCTION TO USE SAVED CREDENTIALS
-// Replace your existing doLogin() function with this updated one:
 function doLogin() {
     var u = document.getElementById('login-user').value.trim();
     var p = document.getElementById('login-pass').value.trim();
+    var users = getUsers();
+    
+    // Check if user exists in our list
+    var validUser = users.find(function(user) { 
+        return user.username === u && user.password === p; 
+    });
 
-    const savedUser = localStorage.getItem('ep_user') || 'admin';
-    const savedPass = localStorage.getItem('ep_pass') || 'admin';
-
-    if (u === savedUser && p === savedPass) {
+    if (validUser) {
         sessionStorage.setItem('ep_logged_in', 'true');
+        sessionStorage.setItem('ep_current_user', u); // Remember who is logged in
         checkAuth();
     } else {
         var err = document.getElementById('login-error');
