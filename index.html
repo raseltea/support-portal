@@ -638,6 +638,7 @@ function rlist(){
   var op=tickets.filter(function(t){return t.status==='open';}).length;
   var ip=tickets.filter(function(t){return t.status==='in-progress';}).length;
   var rs=tickets.filter(function(t){return t.status==='resolved';}).length;
+  +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'
   var CN={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
   var pk='';Object.keys(CN).forEach(function(c){pk+='<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" '+(vcols.indexOf(c)!==-1?'checked':'')+' onchange="tcol(\''+c+'\',this.checked)" style="width:14px;height:14px"> '+CN[c]+'</label>';});
   var bk='';
