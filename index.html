@@ -638,7 +638,6 @@ function rlist(){
   var op=tickets.filter(function(t){return t.status==='open';}).length;
   var ip=tickets.filter(function(t){return t.status==='in-progress';}).length;
   var rs=tickets.filter(function(t){return t.status==='resolved';}).length;
-  +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'+
   var CN={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
   var pk='';Object.keys(CN).forEach(function(c){pk+='<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" '+(vcols.indexOf(c)!==-1?'checked':'')+' onchange="tcol(\''+c+'\',this.checked)" style="width:14px;height:14px"> '+CN[c]+'</label>';});
   var bk='';
@@ -677,6 +676,7 @@ function rlist(){
     +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:4px 8px">Queues</div>'
     +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:3px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
     +'<div class="queue-link'+(ttype==='all'?' active':'')+'" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
+    +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'
     +'<div class="queue-link'+(ttype==='feature'?' active':'')+'" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
     +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()">🔴 Incidents</div>'
     +'<div class="queue-link'+(ttype==='degraded'?' active':'')+'" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
