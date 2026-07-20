@@ -6,6 +6,14 @@
 <title>Edge Platform — Atlassian</title>
 <link href="https://fonts.googleapis.com/css2?family=Charlie+Display:wght@600;700&family=Charlie+Text:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "99j3R317qOIGxAN-T",
+      });
+   })();
+</script>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#F7F8F9;--surface:#fff;--sidebar-bg:#1C2B41;--sw:240px;--th:56px;
@@ -409,6 +417,31 @@ var TS = {
   "closed":{label:"Closed",loz:"lgr"},
 };
 var tickets = [];
+  // --- EMAIL NOTIFICATION USING EMAILJS ---
+function notifyReporter(ticketId, updateMessage) {
+    var t = tickets.find(function(x) { return x.id === ticketId; });
+    if (!t || !t.reporterEmail) {
+        console.log('No email found for ticket', ticketId);
+        return;
+    }
+
+    var templateParams = {
+        to_email: t.reporterEmail,
+        ticket_id: t.id,
+        ticket_summary: t.title,
+        status: t.status,
+        reporter_name: t.reporter,
+        message: updateMessage
+    };
+
+    // Replace with your actual EmailJS IDs
+  emailjs.send('raseldd@hotmail.com', 'template_jhku94w', templateParams)
+        .then(function(response) {
+            console.log('✅ Email sent!', response);
+        }, function(error) {
+            console.log('❌ Failed to send email:', error);
+        });
+}
   // --- MULTI-USER SYSTEM ---
 function getUsers() {
     try { 
@@ -767,6 +800,7 @@ function rnew(){
     bH='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:24px">'+th+'</div><div style="display:flex;gap:8px"><button class="btn bd" onclick="tf=\'all\';ts=\'\';rlist()">Cancel</button><button class="btn bp" onclick="ns=2;rnew()">Next</button></div>';
   } else if(ns===2){
     bH='<div style="margin-bottom:16px"><label class="fl">Title *</label><input type="text" id="ntit" placeholder="Brief summary" value="'+nf.title+'" oninput="nf.title=this.value"></div>'
+      +'<div style="margin-bottom:16px"><label class="fl">Your Email *</label><input type="email" id="nemail" placeholder="your.email@example.com" required></div>'
       +'<div style="margin-bottom:16px"><label class="fl">Description *</label><textarea id="ndesc" rows="5" placeholder="Describe the issue..." oninput="nf.desc=this.value">'+nf.desc+'</textarea></div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px"><div><label class="fl">Product</label><select id="nprod" onchange="nf.prod=this.value">'+['Jira','Confluence','Bitbucket','Trello','Atlassian Access','Status Page'].map(function(p){return '<option>'+p+'</option>';}).join('')+'</select></div><div><label class="fl">Priority</label><select id="npri" onchange="nf.priority=this.value">'+['Critical','High','Medium','Low'].map(function(p){return '<option'+(nf.priority===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div></div>'
       +'<div style="margin-bottom:20px"><label class="fl">Attachment</label><div class="az" onclick="nf.att=nf.att?\'\':\'screenshot.png\';rnew()">'+(nf.att?'📎 '+nf.att+' ✕':'📎 Click to attach a file')+'</div></div>'
@@ -809,7 +843,7 @@ function subT(){
   btns.style.display='none';send.style.display='block';
   var nid='AT-'+Date.now().toString().slice(-6);
   var tt=TT.find(function(t){return t.id===nf.type;});
-  var fields={Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:'admin@internal',Submitted:new Date().toLocaleString('en-GB')};
+  var fields={Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:document.getElementById('nemail').value,Submitted:new Date().toLocaleString('en-GB')};
   if(nf.cloudUrl)fields.ImageURL=nf.cloudUrl;
   fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{method:'POST',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({records:[{fields:fields}]})})
   .then(function(){
@@ -818,7 +852,7 @@ function subT(){
   if(nf.ad&&nf.ad.startsWith('data:image/')){
     try{localStorage.setItem('img_'+nid,JSON.stringify({name:nf.att,data:nf.ad,url:nf.cloudUrl||''}));}catch(e){}
   }
-  tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',msgs:[{from:'Admin',text:nf.desc,time:'just now',agent:false}],aid:'',fn:'Admin',fe:'',an:nf.att||'',ad:nf.cloudUrl||nf.ad||''});
+ tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',reporterEmail:document.getElementById('nemail').value,msgs:[{from:'Admin',text:nf.desc}]});
     setTimeout(function(){tf='all';ts='';rlist();document.getElementById('sv-new').style.display='none';document.getElementById('sv-list').style.display='block';},2400);
   }).catch(function(){send.style.display='none';btns.style.display='flex';alert('Could not save.');});
 }
@@ -913,6 +947,7 @@ function sreply(id){
   var inp=document.getElementById('rinp');var txt=inp?inp.value.trim():'';if(!txt)return;
   var t=tickets.find(function(x){return x.id===id;});if(!t)return;
   t.msgs.push({from:'You',text:txt,time:'just now',agent:false});t.updated='just now';rdet();
+  notifyReporter(t.id, "New reply: " + txt);
   setTimeout(function(){var tn=tickets.find(function(x){return x.id===id;});if(!tn)return;tn.msgs.push({from:'Support Agent',text:'Thanks for the update! Our team is looking into this.',time:'just now',agent:true});if(sid===id)rdet();},2000);
 }
 
@@ -971,7 +1006,8 @@ window.bupd = function(s) {
         var t = tickets.find(function(x) { return x.id === id; });
         if (t) {
             t.status = s;
-            
+            notifyReporter(t.id, "Ticket status updated to: " + s);
+          
             // 1. Save to LocalStorage (This makes it persist after refresh)
             try { localStorage.setItem('status_' + id, s); } catch (e) {}
             
