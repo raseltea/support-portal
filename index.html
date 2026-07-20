@@ -419,6 +419,10 @@ var TS = {
 var tickets = [];
   // --- EMAIL NOTIFICATION USING EMAILJS ---
 function notifyReporter(ticketId, updateMessage) {
+  if (typeof emailjs === 'undefined') {
+  console.log('EmailJS not loaded yet');
+  return;
+}
     var t = tickets.find(function(x) { return x.id === ticketId; });
     if (!t || !t.reporterEmail) {
         console.log('No email found for ticket', ticketId);
