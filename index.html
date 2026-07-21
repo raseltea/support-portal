@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Edge Platform — Atlassian</title>
 <link href="https://fonts.googleapis.com/css2?family=Charlie+Display:wght@600;700&family=Charlie+Text:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({ publicKey: "99j3R317qOIGxAN-T" });
+   })();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -26,11 +32,7 @@ body{background:var(--bg);color:var(--text);font-family:'Charlie Text','Segoe UI
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* LAYOUT */
 #app{display:flex;height:100vh;overflow:hidden;position:relative}
-
-/* SIDEBAR */
 #sidebar{width:var(--sw);flex-shrink:0;background:var(--sidebar-bg);display:flex;flex-direction:column;overflow:hidden;transition:width .2s;z-index:50}
 #sidebar.col{width:52px}
 #sidebar.col .nl,#sidebar.col .sn,#sidebar.col .ss,#sidebar.col .sec,#sidebar.col .nbadge,#sidebar.col .sun{display:none!important}
@@ -55,15 +57,11 @@ body{background:var(--bg);color:var(--text);font-family:'Charlie Text','Segoe UI
 .su{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:3px;color:var(--ni);font-size:12px;cursor:pointer;transition:background .15s}
 .su:hover{background:var(--nh);color:#fff}
 .av{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#0C66E4,#0039B3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-
-/* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 #topbar{height:var(--th);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 24px;flex-shrink:0;box-shadow:var(--sh)}
 #page{flex:1;overflow-y:auto;padding:24px}
 .tp{display:none;animation:fadeUp .3s ease}
 .tp.active{display:block}
-
-/* COMPONENTS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:3px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:background .15s;white-space:nowrap}
 .bp{background:var(--blue);color:#fff}.bp:hover{background:var(--bh)}
 .bd{background:transparent;color:var(--text);border:2px solid var(--border)}.bd:hover{background:var(--bl)}
@@ -146,11 +144,8 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 .mbdy{padding:0 24px 24px}
 .mft{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 .al{font-size:11px;color:var(--blue);letter-spacing:.12em;margin-bottom:4px;text-transform:uppercase;font-weight:600}
-
-  /* LOGIN SCREEN */
 .login-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center}
 .login-card{background:var(--surface);padding:40px;border-radius:8px;box-shadow:var(--sm);width:100%;max-width:400px;border:1px solid var(--border);animation:fadeUp .3s ease}
-  /* MOBILE */
 #sov{display:none;position:fixed;inset:0;background:rgba(9,30,66,.5);z-index:49}
 #hbg{display:none;background:transparent;border:none;cursor:pointer;padding:6px;border-radius:4px;flex-direction:column;gap:5px;flex-shrink:0;align-self:center}
 #hbg span{display:block;width:18px;height:2px;background:var(--text);border-radius:1px}
@@ -168,7 +163,6 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
 </style>
 </head>
 <body>
-<!-- LOGIN OVERLAY -->
 <div id="login-overlay" class="login-overlay">
   <div class="login-card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
@@ -201,7 +195,7 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     <div><div class="sn">Edge Platform</div><div class="ss">atlassian.com</div></div>
   </div>
   <div class="sec">Platform</div>
-  <div class="ni active" data-tab="arch" onclick="ST('arch',this)"><span class="nicon">⬡</span><span class="nl">Architecture</span></div>
+  <div class="ni active" data-tab="arch" onclick="ST('arch',this)"><span class="nicon"></span><span class="nl">Architecture</span></div>
   <div class="ni" data-tab="dash" onclick="ST('dash',this)"><span class="nicon">▤</span><span class="nl">Dashboard</span></div>
   <div class="sec">Engineering</div>
   <div class="ni" data-tab="learn" onclick="ST('learn',this)"><span class="nicon">◈</span><span class="nl">Deep Dive</span></div>
@@ -210,15 +204,14 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
   <div class="sp"></div>
   <div class="sbot">
     <div class="su" style="cursor:pointer" onclick="showAccount()">
-  <div class="av" id="sidebar-av">YO</div>
-  <div class="sun">
-    <div style="color:#fff;font-size:12px;font-weight:500" id="sidebar-user">You</div>
-    <div style="font-size:11px">Manage account</div>
-  </div>
-</div>
+      <div class="av" id="sidebar-av">YO</div>
+      <div class="sun">
+        <div style="color:#fff;font-size:12px;font-weight:500" id="sidebar-user">You</div>
+        <div style="font-size:11px">Manage account</div>
+      </div>
+    </div>
   </div>
 </nav>
-<button class="btn bd bsm" onclick="doLogout()" style="margin-right:8px">Logout</button>
 <div id="main">
   <div id="topbar">
     <button id="hbg" onclick="toggleSB()"><span></span><span></span><span></span></button>
@@ -228,20 +221,13 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
     </div>
     <div style="flex:1"></div>
     <button class="btn bd" style="font-size:12px;padding:5px 10px" id="tba" onclick="TBA()">+ Create</button>
-   <!-- Logout Button -->
-<button class="btn bd bsm" onclick="doLogout()" style="margin-right:8px">Logout</button>
-
-<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)">
-  <span class="dot dp" style="background:var(--green);box-shadow:0 0 0 3px rgba(31,132,90,.2)"></span>
-  <span>1,994 online</span>
-</div>
-
-<!-- Avatar with ID added -->
-<div id="topbar-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;overflow:hidden">YO</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)">
+      <span class="dot dp" style="background:var(--green);box-shadow:0 0 0 3px rgba(31,132,90,.2)"></span>
+      <span>1,994 online</span>
+    </div>
+    <div id="topbar-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;overflow:hidden">YO</div>
   </div>
-
   <div id="page">
-    <!-- ARCH -->
     <div id="tp-arch" class="tp active">
       <div style="margin-bottom:20px">
         <h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">System Architecture</h1>
@@ -256,8 +242,6 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--sub)"><svg width="30" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="#8993A4" stroke-width="2" stroke-dasharray="4,3"/><polygon points="22,2 26,5 22,8" fill="#8993A4"/></svg>Polling / callback</div>
       </div>
     </div>
-
-    <!-- DASH -->
     <div id="tp-dash" class="tp">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px">
         <div><h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Dashboard</h1><p style="color:var(--sub)">Global proxy fleet health and registered services</p></div>
@@ -269,8 +253,6 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">Registered Services</div>
       <div class="card" style="padding:0;overflow:hidden"><table class="jtbl"><thead><tr><th>Service</th><th>Product</th><th>Domain</th><th>Region</th><th>Status</th><th>RPS</th></tr></thead><tbody id="stbody"></tbody></table></div>
     </div>
-
-    <!-- LEARN -->
     <div id="tp-learn" class="tp">
       <div style="margin-bottom:20px"><h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Deep Dive</h1><p style="color:var(--sub)">8 years of platform engineering in 6 chapters</p></div>
       <div style="display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start">
@@ -278,84 +260,102 @@ pre{padding:16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12
         <div id="chcon"></div>
       </div>
     </div>
-
-    <!-- SUPPORT -->
     <div id="tp-sup" class="tp">
       <div id="sv-list"></div>
       <div id="sv-new" style="display:none;max-width:680px"></div>
       <div id="sv-det" style="display:none;max-width:800px"></div>
     </div>
-      <!-- ACCOUNT -->
-<div id="tp-account" class="tp">
-  <div style="max-width:600px;margin:0 auto">
-    <button class="btn bs bsm" style="margin-bottom:12px;padding-left:0" onclick="ST('arch', document.querySelector('[data-tab=\'arch\']'))">‹ Back to dashboard</button>
-    <h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Account Settings</h1>
-    <p style="color:var(--sub);font-size:14px;margin-bottom:24px">Manage your profile and security credentials</p>
-
-    <div class="card" style="margin-bottom:20px">
-      <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Profile Picture</div>
-      <div style="display:flex;align-items:center;gap:20px">
-        <div id="acc-av-preview" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;overflow:hidden">YO</div>
-        <div>
-          <label class="btn bd bsm" style="cursor:pointer">
-            Upload Image
-            <input type="file" id="acc-img-input" accept="image/*" style="display:none" onchange="handleAccImg(event)">
-          </label>
-          <div style="font-size:12px;color:var(--muted);margin-top:6px">JPG, PNG or GIF. Max 2MB.</div>
+    <div id="tp-account" class="tp">
+      <div style="max-width:600px;margin:0 auto">
+        <button class="btn bs bsm" style="margin-bottom:12px;padding-left:0" onclick="ST('arch', document.querySelector('[data-tab=\'arch\']'))">‹ Back to dashboard</button>
+        <h1 style="font-family:'Charlie Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Account Settings</h1>
+        <p style="color:var(--sub);font-size:14px;margin-bottom:24px">Manage your profile and security credentials</p>
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Profile Picture</div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <div id="acc-av-preview" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#0C66E4,#6E5DC6);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;overflow:hidden">YO</div>
+            <div>
+              <label class="btn bd bsm" style="cursor:pointer">
+                Upload Image
+                <input type="file" id="acc-img-input" accept="image/*" style="display:none" onchange="handleAccImg(event)">
+              </label>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">JPG, PNG or GIF. Max 2MB.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Credentials</div>
+          <div style="margin-bottom:16px">
+            <label class="fl">Username</label>
+            <input type="text" id="acc-username" placeholder="admin">
+          </div>
+          <div style="margin-bottom:16px">
+            <label class="fl">Password</label>
+            <input type="password" id="acc-password" placeholder="••••••••">
+          </div>
+        </div>
+        <div id="acc-msg" style="display:none;background:var(--gbg);color:var(--green);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;border:1px solid rgba(31,132,90,0.2)">✓ Settings saved successfully!</div>
+        <button class="btn bp" onclick="saveAccount()">Save changes</button>
+      </div>
+    </div>
+    <div id="mo" onclick="if(event.target===this)closeM()">
+      <div class="mbox">
+        <div class="mhd"><h2>New Service</h2><button class="mcl" onclick="closeM()">✕</button></div>
+        <div class="mbdy">
+          <div id="mform">
+            <div style="margin-bottom:16px"><label class="fl">Service Name</label><input type="text" id="pn" placeholder="my-service-prod"/></div>
+            <div style="margin-bottom:16px"><label class="fl">Domain</label><input type="text" id="pd" placeholder="myservice.atlassian.com"/></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div><label class="fl">Product</label><select id="pp"><option>jira</option><option>confluence</option><option>bitbucket</option><option>statuspage</option><option>trello</option></select></div>
+              <div><label class="fl">Region</label><select id="pr"><option>us-east-1</option><option>us-west-2</option><option>eu-west-1</option><option>eu-central-1</option><option>ap-southeast-1</option></select></div>
+            </div>
+          </div>
+          <div id="mlog" style="display:none">
+            <div id="mlt" style="font-size:13px;color:var(--sub);margin-bottom:12px"></div>
+            <div id="mlb" style="background:#1E2A3A;border-radius:6px;padding:14px;min-height:180px;font-family:monospace;font-size:12px;line-height:1.9;color:#A9B7C6;overflow-y:auto;max-height:220px"></div>
+          </div>
+        </div>
+        <div class="mft" id="mft">
+          <button class="btn bd" onclick="closeM()">Cancel</button>
+          <button class="btn bp" onclick="startProv()">Provision</button>
         </div>
       </div>
     </div>
-</div>
-  
-    <div class="card" style="margin-bottom:20px">
-      <div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Credentials</div>
-      <div style="margin-bottom:16px">
-        <label class="fl">Username</label>
-        <input type="text" id="acc-username" placeholder="admin">
-      </div>
-      <div style="margin-bottom:16px">
-        <label class="fl">Password</label>
-        <input type="password" id="acc-password" placeholder="••••••••">
-      </div>
-    </div>
-
-    <div id="acc-msg" style="display:none;background:var(--gbg);color:var(--green);padding:12px;border-radius:4px;font-size:13px;margin-bottom:16px;border:1px solid rgba(31,132,90,0.2)">✓ Settings saved successfully!</div>
-    <button class="btn bp" onclick="saveAccount()">Save changes</button>
   </div>
 </div>
-
-<!-- MODAL -->
-<div id="mo" onclick="if(event.target===this)closeM()">
+<div id="queue-modal" style="display:none;position:fixed;inset:0;background:rgba(9,30,66,.5);z-index:200;align-items:center;justify-content:center">
   <div class="mbox">
-    <div class="mhd"><h2>New Service</h2><button class="mcl" onclick="closeM()">✕</button></div>
+    <div class="mhd"><h2>Create Custom Queue</h2><button class="mcl" onclick="closeQueueModal()">✕</button></div>
     <div class="mbdy">
-      <div id="mform">
-        <div style="margin-bottom:16px"><label class="fl">Service Name</label><input type="text" id="pn" placeholder="my-service-prod"/></div>
-        <div style="margin-bottom:16px"><label class="fl">Domain</label><input type="text" id="pd" placeholder="myservice.atlassian.com"/></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div><label class="fl">Product</label><select id="pp"><option>jira</option><option>confluence</option><option>bitbucket</option><option>statuspage</option><option>trello</option></select></div>
-          <div><label class="fl">Region</label><select id="pr"><option>us-east-1</option><option>us-west-2</option><option>eu-west-1</option><option>eu-central-1</option><option>ap-southeast-1</option></select></div>
-        </div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Queue Name</label>
+        <input type="text" id="queue-name" placeholder="e.g., My Team's Tickets">
       </div>
-      <div id="mlog" style="display:none">
-        <div id="mlt" style="font-size:13px;color:var(--sub);margin-bottom:12px"></div>
-        <div id="mlb" style="background:#1E2A3A;border-radius:6px;padding:14px;min-height:180px;font-family:monospace;font-size:12px;line-height:1.9;color:#A9B7C6;overflow-y:auto;max-height:220px"></div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Color</label>
+        <select id="queue-color">
+          <option value="#0C66E4">Blue</option>
+          <option value="#1F845A">Green</option>
+          <option value="#CA3521">Red</option>
+          <option value="#974F0C">Amber</option>
+          <option value="#6E5DC6">Purple</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px">
+        <label class="fl">Description (optional)</label>
+        <input type="text" id="queue-desc" placeholder="Brief description">
       </div>
     </div>
-    <div class="mft" id="mft">
-      <button class="btn bd" onclick="closeM()">Cancel</button>
-      <button class="btn bp" onclick="startProv()">Provision</button>
+    <div class="mft">
+      <button class="btn bd" onclick="closeQueueModal()">Cancel</button>
+      <button class="btn bp" onclick="createCustomQueue()">Create Queue</button>
     </div>
   </div>
 </div>
-
 <script>
-// === CONFIG ===
 var AT = 'patHOTRCTuWSucNjg.e2a05150bdee1f86f835ba8432f64663e20e582afacb42667330bec4632c5813';
 var AB = 'app6eSVRvm1wMFMq9';
 var ATB = 'Table%201';
-
-// === DATA ===
 var REGIONS = ["us-east-1","us-west-2","eu-west-1","eu-central-1","ap-southeast-1","ap-northeast-1","sa-east-1","ca-central-1","ap-south-1","eu-north-1","us-west-1","af-south-1","me-south-1"];
 var ANODES = [
   {id:"client",lines:["Developer","Client"],x:30,y:190,c:"#8993A4",icon:"👩‍💻"},
@@ -363,17 +363,17 @@ var ANODES = [
   {id:"sqs",lines:["SQS","Queue"],x:350,y:110,c:"#974F0C",icon:"📨"},
   {id:"worker",lines:["Async","Worker"],x:510,y:110,c:"#974F0C",icon:"⚙️"},
   {id:"dynamo",lines:["DynamoDB","State"],x:510,y:280,c:"#1F845A",icon:"🗄️"},
-  {id:"cp",lines:["Control Plane","Sovereign"],x:670,y:190,c:"#6E5DC6",icon:"🧠"},
+  {id:"cp",lines:["Control Plane","Sovereign"],x:670,y:190,c:"#6E5DC6",icon:""},
   {id:"envoy",lines:["Envoy Proxy","Fleet"],x:830,y:190,c:"#C25100",icon:"🔀"},
   {id:"backend",lines:["Backend","Services"],x:990,y:190,c:"#8993A4",icon:"🏗️"},
   {id:"s3",lines:["S3 Config","Bucket"],x:670,y:330,c:"#1F845A",icon:"🪣"},
-  {id:"cf",lines:["CloudFront","DDoS"],x:830,y:70,c:"#943D73",icon:"🛡️"},
+  {id:"cf",lines:["CloudFront","DDoS"],x:830,y:70,c:"#943D73",icon:"️"},
 ];
 var AEDGES = [
   {f:"client",t:"broker",l:"provision request",a:true},
   {f:"broker",t:"sqs",l:"enqueue task",a:true},
   {f:"sqs",t:"worker",l:"consume",a:true},
-  {f:"worker",t:"dynamo",l:"write status",a:false},
+  {f:"worker",t:"dynamo",l:"write status",a:true},
   {f:"dynamo",t:"broker",l:"poll status",a:false,d:true},
   {f:"broker",t:"client",l:"ready / error",a:false,d:true},
   {f:"dynamo",t:"cp",l:"context data",a:true},
@@ -399,7 +399,7 @@ var TT = [
   {id:"degraded",label:"Performance",icon:"🟡",loz:"la",c:"#974F0C",desc:"Slowness or partial functionality"},
   {id:"question",label:"Question",icon:"🔵",loz:"lb",c:"#0C66E4",desc:"How-to or configuration help"},
   {id:"feature",label:"Feature Request",icon:"🟢",loz:"lg",c:"#1F845A",desc:"Suggest an improvement"},
-  {id:"billing",label:"Billing",icon:"🟣",loz:"lp",c:"#6E5DC6",desc:"Invoice or payment issue"},
+  {id:"billing",label:"Billing",icon:"",loz:"lp",c:"#6E5DC6",desc:"Invoice or payment issue"},
 ];
 var TS = {
   "open":{label:"To Do",loz:"lb"},
@@ -409,7 +409,28 @@ var TS = {
   "closed":{label:"Closed",loz:"lgr"},
 };
 var tickets = [];
-  // --- MULTI-USER SYSTEM ---
+
+// === EMAIL NOTIFICATION ===
+function notifyReporter(ticketId, updateMessage) {
+    if (typeof emailjs === 'undefined') return;
+    var t = tickets.find(function(x) { return x.id === ticketId; });
+    if (!t || !t.fe) { console.log('No email found for ticket', ticketId); return; }
+
+    var templateParams = {
+        to_email: t.fe,
+        ticket_id: t.id,
+        ticket_summary: t.title,
+        status: t.status,
+        reporter_name: t.fn || 'User',
+        message: updateMessage
+    };
+
+    emailjs.send('raseldd@hotmail.com', 'template_jhku94w', templateParams)
+        .then(function(response) { console.log('✅ Email sent!', response); })
+        .catch(function(error) { console.log('❌ Failed to send email:', error); });
+}
+
+// === MULTI-USER SYSTEM ===
 function getUsers() {
     try { 
         var stored = localStorage.getItem('ep_users');
@@ -440,14 +461,14 @@ var svcs = [
   {id:"s2",name:"confluence-eu",product:"confluence",domain:"confluence-eu.atlassian.com",status:"active",region:"eu-west-1",rps:1800},
   {id:"s3",name:"bitbucket-apac",product:"bitbucket",domain:"bitbucket-ap.atlassian.com",status:"provisioning",region:"ap-southeast-1",rps:0},
 ];
-var tf="all",ttype="all",customQueues=[],ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;// === SIDEBAR ===
+var tf="all",ttype="all",customQueues=[],ts="",sid=null,sel=[],dels=[],vcols=["requestType","key","summary","reporter","assignee","status","priority","created"],scol=false,nf={type:"incident",title:"",priority:"High",desc:"",att:"",ad:"",email:""},ns=1,ach=0,ctmr=null,ftmr=null,fstep=0,editOn=false;
+
 function toggleCol(){scol=!scol;document.getElementById('sidebar').classList.toggle('col',scol);var b=document.getElementById('cbtn');b.innerHTML=scol?'▶':'◀';b.style.left=scol?'40px':'228px';}
 function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sov').classList.toggle('open');}
 function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sov').classList.remove('open');}
 
-// === TABS ===
 var TLBL={arch:'Architecture',dash:'Dashboard',learn:'Deep Dive',sup:'My Tickets'};
-var TACT={arch:'+ Create',dash:'+ New service',learn:'Docs ↗',sup:'+ Raise ticket'};
+var TACT={arch:'+ Create',dash:'+ New service',learn:'Docs ',sup:'+ Raise ticket'};
 function ST(id,el){
   document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});
   document.querySelectorAll('.tp').forEach(function(p){p.classList.remove('active');});
@@ -464,16 +485,14 @@ function ST(id,el){
 function TBA(){var a=document.querySelector('.ni.active');if(!a)return;if(a.dataset.tab==='dash')openM();if(a.dataset.tab==='sup')showNew();}
 
 // === AIRTABLE ===
-// === AIRTABLE ===
 var lastFetchTime = 0;
-var FETCH_COOLDOWN = 10000; // 10 seconds between requests
+var FETCH_COOLDOWN = 10000;
 
 function fetchAT(){
-    // Rate limit check
     var now = Date.now();
     if (now - lastFetchTime < FETCH_COOLDOWN) {
         console.log('Rate limit: waiting ' + Math.ceil((FETCH_COOLDOWN - (now - lastFetchTime))/1000) + ' seconds...');
-        return Promise.resolve(); // Return empty promise, don't fetch
+        return Promise.resolve(); 
     }
     lastFetchTime = now;
     
@@ -488,48 +507,33 @@ function fetchAT(){
                 var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
                 if(dels.indexOf(tid)!==-1)return;
                 var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
-                
-                // ALWAYS check localStorage first, regardless of existing or new
                 var lsStatus='';
                 try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
-                
-                // ... rest of your existing code continues from line 482
+                if(existing){
+                  if(lsStatus){existing.status=lsStatus;}
+                  else if(f.Status){existing.status={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||existing.status;}
+                  return;
+                }
+                var finalStatus='open';
+                if(lsStatus){finalStatus=lsStatus;}
+                else if(f.Status){finalStatus={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||'open';}
+                var imgData='',imgName=f.Attachment||'';
+                try{var stored=localStorage.getItem('img_'+tid);if(stored){var parsed=JSON.parse(stored);imgData=parsed.data||'';imgName=parsed.name||imgName;}}catch(e){}
+                var imgUrl=f.ImageURL||'';
+                if(!imgUrl){try{var si=localStorage.getItem('img_'+tid);if(si){var pi=JSON.parse(si);imgUrl=pi.url||pi.data||'';imgName=pi.name||imgName;}}catch(e){}}
+                tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:finalStatus,created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgUrl||imgData});
             });
+            updBadge();
+            if(document.getElementById('tp-sup').classList.contains('active'))rlist();
+        }).catch(function(e){console.error('AT error:',e);}).finally(function(){
+            var rb=document.querySelector('[onclick="fetchAT()"]');
+            if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
         });
-}
-        if(existing){
-          if(lsStatus){existing.status=lsStatus;}
-          else if(f.Status){existing.status={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||existing.status;}
-          return;
-        }
-        
-        // For new tickets from Airtable
-        var finalStatus='open';
-        if(lsStatus){
-          finalStatus=lsStatus;
-        }else if(f.Status){
-          finalStatus={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||'open';
-        }
-        
-        var imgData='',imgName=f.Attachment||'';
-        try{var stored=localStorage.getItem('img_'+tid);if(stored){var parsed=JSON.parse(stored);imgData=parsed.data||'';imgName=parsed.name||imgName;}}catch(e){}
-        var imgUrl=f.ImageURL||'';
-        if(!imgUrl){try{var si=localStorage.getItem('img_'+tid);if(si){var pi=JSON.parse(si);imgUrl=pi.url||pi.data||'';imgName=pi.name||imgName;}}catch(e){}}
-        
-        tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:finalStatus,created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgUrl||imgData});
-      });
-      updBadge();
-      if(document.getElementById('tp-sup').classList.contains('active'))rlist();
-    }).catch(function(e){console.error('AT error:',e);}).finally(function(){
-      var rb=document.querySelector('[onclick="fetchAT()"]');
-      if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
-    });
 }
 function tfl(l){return {Incident:'incident',Performance:'degraded',Question:'question','Feature Request':'feature',Billing:'billing'}[l]||'question';}
 function updBadge(){var n=tickets.filter(function(t){return t.status==='open'||t.status==='in-progress';}).length;document.getElementById('badge').textContent=n;}
 function updATstatus(aid,s){if(!aid)return;fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+aid,{method:'PATCH',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({fields:{Status:{open:'Open','in-progress':'In Progress',resolved:'Resolved',closed:'Closed'}[s]||s}})});}
 
-// === ARCH ===
 var atick=0,hov=null,NS="http://www.w3.org/2000/svg";
 function nc(n){return{x:n.x+56,y:n.y+36};}
 function rarch(){
@@ -579,7 +583,6 @@ function rarch(){
 }
 setInterval(function(){atick++;if(document.getElementById('tp-arch').classList.contains('active'))rarch();},60);
 
-// === DASHBOARD ===
 function genR(){return REGIONS.map(function(r){return{region:r,proxies:Math.floor(100+Math.random()*120),healthy:Math.random()>.05,rps:Math.floor(800+Math.random()*3000),p99:(Math.random()*12+1).toFixed(1),cpu:Math.floor(15+Math.random()*55)};});}
 var RD=genR();
 function rdash(){
@@ -602,14 +605,13 @@ function startProv(){
   setTimeout(function(){svcs.unshift({id:'s'+Date.now(),name:nm,product:pr,domain:dm,status:'active',region:rg,rps:0});rdash();closeM();},5500);
 }
 
-// === DEEP DIVE ===
 var CHS=[
   {icon:"🏗️",title:"The Problem",sub:"Why self-service?",col:"#C25100",txt:"Atlassian ran expensive enterprise load balancers requiring a centralised ops team for every config change. The goal: let any team self-provision load balancing like spinning up an EC2 instance.",code:null,viz:"problem"},
   {icon:"⚡",title:"The Service Broker",sub:"Open Service Broker API",col:"#0C66E4",txt:"The broker is a FastAPI app that validates requests and hands off to SQS immediately — no heavy synchronous work.",code:"@app.put('/v2/service_instances/{id}')\nasync def provision(id: str, body: ProvisionRequest):\n    validate_domain(body.domain)\n    await sqs.send_message(QueueUrl=QUEUE_URL,\n        MessageBody=json.dumps({'instance_id': id, 'domain': body.domain}))\n    return JSONResponse({'operation': 'provision'}, status_code=202)",file:"broker.py",viz:null},
   {icon:"⚙️",title:"Async Workers",sub:"SQS → Worker → DynamoDB",col:"#5A4A00",txt:"Workers consume SQS tasks, create DNS records, provision CloudFront distributions, and write final status to DynamoDB.",code:"def process_task(message):\n    task = json.loads(message['Body'])\n    try:\n        route53.create_record(task['domain'])\n        dist_id = cloudfront.create_distribution(domain=task['domain'])\n        dynamodb.put_item(Item={'instance_id': task['instance_id'], 'state': 'succeeded'})\n    except Exception as e:\n        dynamodb.put_item(Item={'instance_id': task['instance_id'], 'state': 'failed', 'error': str(e)})",file:"worker.py",viz:"flow"},
   {icon:"🧠",title:"Envoy Control Plane",sub:"Open-sourced as 'Sovereign'",col:"#6E5DC6",txt:"Sovereign polls DynamoDB and S3, renders Jinja2 templates into Envoy config, and streams it to proxies via xDS gRPC. Zero downtime at 2,000 proxy scale.",code:"class SovereignControlPlane:\n    def poll_and_render(self):\n        services = self.dynamo.scan_services()\n        templates = self.s3.get_templates()\n        for service in services:\n            cluster = templates['cluster'].render(name=service['name'], endpoints=service['endpoints'])\n            route = templates['route'].render(domain=service['domain'], cluster_name=service['name'])\n            self.xds_server.update(cluster, route)",file:"control_plane.py",viz:null},
   {icon:"🔌",title:"Sidecar Model",sub:"Auth, rate limiting, and more",col:"#943D73",txt:"Auth, rate limiting, and logging moved to the edge as Envoy sidecar containers. The auth sidecar was written in Rust for performance.",code:"async fn check(req: CheckRequest) -> CheckResponse {\n    let token = req.attributes.request.http.headers\n        .get('authorization').and_then(|v| v.strip_prefix('Bearer '))?;\n    let claims = verify_jwt(token, &JWT_SECRET)?;\n    Ok(CheckResponse { status: Some(Status { code: 0 }), .. })\n}",file:"auth_sidecar.rs",viz:null},
-  {icon:"📖",title:"Lessons Learned",sub:"Beyond the code",col:"#1F845A",txt:"After 8 years and a layoff: documentation and runbooks prevent 3am panic. Diplomacy is a real engineering skill. Concentrated code churn signals growing coupling.",code:null,viz:"lessons"},
+  {icon:"",title:"Lessons Learned",sub:"Beyond the code",col:"#1F845A",txt:"After 8 years and a layoff: documentation and runbooks prevent 3am panic. Diplomacy is a real engineering skill. Concentrated code churn signals growing coupling.",code:null,viz:"lessons"},
 ];
 function rchl(){var h='';CHS.forEach(function(ch,i){h+='<button class="cb'+(ach===i?' active':'')+'" onclick="sch('+i+')"><span style="font-size:15px">'+ch.icon+'</span><div><div class="cht">'+ch.title+'</div><div class="chs">'+ch.sub+'</div></div></button>';});document.getElementById('chlist').innerHTML=h;}
 function rchc(){
@@ -627,35 +629,30 @@ function sch(i){ach=i;if(ctmr)clearInterval(ctmr);if(ftmr)clearInterval(ftmr);rc
 function stw(code,col){var pre=document.getElementById('cpre');if(!pre)return;var i=0;ctmr=setInterval(function(){if(i<code.length){pre.innerHTML='<span style="color:#A9B7C6">'+code.slice(0,i+1)+'</span><span style="color:'+col+';opacity:.7">█</span>';i+=3;}else{pre.innerHTML='<span style="color:#A9B7C6">'+code+'</span>';clearInterval(ctmr);}},14);}
 function sfa(){fstep=0;if(ftmr)clearInterval(ftmr);var steps=["Client","Broker","SQS","Worker","DynamoDB","Client polls"];function render(){var el=document.getElementById('fsteps');if(!el)return;var h='';steps.forEach(function(s,i){h+='<div style="display:flex;align-items:center;gap:4px"><div class="fs'+(i<=fstep?' lit':'')+'">'+s+'</div>'+(i<steps.length-1?'<div style="width:18px;height:2px;background:'+(i<fstep?'var(--blue)':'var(--border)')+'"></div>':'')+'</div>';});el.innerHTML=h;}render();ftmr=setInterval(function(){fstep=(fstep+1)%steps.length;render();},1100);}
 function bpviz(){var b=["Dev files a ticket","Ops team configures LB","Days / weeks wait","Expensive licensed hardware"],a=["Dev calls broker API","SQS → Worker provisions","Minutes, fully automated","Open-source Envoy proxies"];var h='<div class="card" style="margin-top:14px"><div style="font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Before vs After</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';h+='<div style="border:1px solid rgba(202,53,33,.25);border-radius:6px;padding:14px;background:rgba(255,237,235,.4)"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:10px">BEFORE</div>';b.forEach(function(i){h+='<div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:var(--sub)"><span style="color:var(--red)">✗</span>'+i+'</div>';});h+='</div><div style="border:1px solid rgba(31,132,90,.25);border-radius:6px;padding:14px;background:rgba(220,255,241,.4)"><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px">AFTER</div>';a.forEach(function(i){h+='<div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:var(--sub)"><span style="color:var(--green)">✓</span>'+i+'</div>';});return h+'</div></div></div>';}
-function blviz(col){var L=[{i:"📝",t:"Documentation",d:"Runbooks prevent 3am panic."},{i:"🤝",t:"Diplomacy",d:"Proposing ideas is a real engineering skill."},{i:"🔍",t:"Code Churn",d:"Concentrated churn = growing coupling."},{i:"🎓",t:"Mentoring",d:"Let them struggle a little."},{i:"⚠️",t:"Operational Risk",d:"Plan for DB outages and queue failures."}];var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px">';L.forEach(function(l){h+='<div class="card" style="padding:14px"><div style="font-size:20px;margin-bottom:7px">'+l.i+'</div><div style="font-size:13px;font-weight:600;color:'+col+';margin-bottom:4px">'+l.t+'</div><div style="font-size:12px;color:var(--sub);line-height:1.6">'+l.d+'</div></div>';});return h+'</div>';}
+function blviz(col){var L=[{i:"",t:"Documentation",d:"Runbooks prevent 3am panic."},{i:"",t:"Diplomacy",d:"Proposing ideas is a real engineering skill."},{i:"🔍",t:"Code Churn",d:"Concentrated churn = growing coupling."},{i:"🎓",t:"Mentoring",d:"Let them struggle a little."},{i:"⚠️",t:"Operational Risk",d:"Plan for DB outages and queue failures."}];var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px">';L.forEach(function(l){h+='<div class="card" style="padding:14px"><div style="font-size:20px;margin-bottom:7px">'+l.i+'</div><div style="font-size:13px;font-weight:600;color:'+col+';margin-bottom:4px">'+l.t+'</div><div style="font-size:12px;color:var(--sub);line-height:1.6">'+l.d+'</div></div>';});return h+'</div>';}
 
-// === SUPPORT LIST ===
 function rlist(){
   document.getElementById('sv-list').style.display='block';
   document.getElementById('sv-new').style.display='none';
   document.getElementById('sv-det').style.display='none';
   updBadge();
   var filt=tickets.filter(function(t){
-  var statusMatch = (tf==='all'||t.status===tf);
-  var searchMatch = (!ts||t.title.toLowerCase().includes(ts.toLowerCase())||t.id.toLowerCase().includes(ts.toLowerCase()));
-  
-  // Check custom queues
-  var typeMatch = true;
-  if (ttype !== 'all') {
-    var isCustomQueue = customQueues.find(function(q) { return q.id === ttype; });
-    if (isCustomQueue) {
-      typeMatch = isCustomQueue.tickets.indexOf(t.id) !== -1;
-    } else {
-      typeMatch = t.type === ttype;
+    var statusMatch = (tf==='all'||t.status===tf);
+    var searchMatch = (!ts||t.title.toLowerCase().includes(ts.toLowerCase())||t.id.toLowerCase().includes(ts.toLowerCase()));
+    var typeMatch = true;
+    if (ttype !== 'all') {
+      var isCustomQueue = customQueues.find(function(q) { return q.id === ttype; });
+      if (isCustomQueue) {
+        typeMatch = isCustomQueue.tickets.indexOf(t.id) !== -1;
+      } else {
+        typeMatch = t.type === ttype;
+      }
     }
-  }
-  
-  return statusMatch && typeMatch && searchMatch;
-});
+    return statusMatch && typeMatch && searchMatch;
+  });
   var op=tickets.filter(function(t){return t.status==='open';}).length;
   var ip=tickets.filter(function(t){return t.status==='in-progress';}).length;
   var rs=tickets.filter(function(t){return t.status==='resolved';}).length;
-  +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'
   var CN={requestType:'Request Type',key:'Key',summary:'Summary',reporter:'Reporter',assignee:'Assignee',status:'Status',priority:'Priority',created:'Created'};
   var pk='';Object.keys(CN).forEach(function(c){pk+='<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" '+(vcols.indexOf(c)!==-1?'checked':'')+' onchange="tcol(\''+c+'\',this.checked)" style="width:14px;height:14px"> '+CN[c]+'</label>';});
   var bk='';
@@ -674,7 +671,7 @@ function rlist(){
   if(filt.length===0){tb='<tr><td colspan="10"><div class="es"><div style="font-size:40px;opacity:.4;margin-bottom:12px">🎫</div><div>No tickets found</div></div></td></tr>';}
   else{filt.forEach(function(t){
     var tt=TT.find(function(x){return x.id===t.type;}),st=TS[t.status]||{label:t.status,loz:'lgr'};
-    var pi={Critical:'🔴',High:'🟠',Medium:'🟡',Low:'🔵'}[t.priority]||'⚪',isSel=sel.indexOf(t.id)!==-1;
+    var pi={Critical:'🔴',High:'',Medium:'🟡',Low:''}[t.priority]||'',isSel=sel.indexOf(t.id)!==-1;
     var row='<tr style="'+(isSel?'background:var(--blight)':'')+'">';
     row+='<td style="padding:8px" onclick="event.stopPropagation()"><input type="checkbox" '+(isSel?'checked':'')+' style="width:14px;height:14px;cursor:pointer" onchange="tsel(\''+t.id+'\',this.checked)"></td>';
     if(vcols.indexOf('requestType')!==-1)row+='<td onclick="otk(\''+t.id+'\')" style="cursor:pointer"><span style="font-size:16px">'+(tt?tt.icon:'📋')+'</span> <span class="loz '+(tt?tt.loz:'lgr')+'" style="font-size:10px">'+(tt?tt.label:t.type)+'</span></td>';
@@ -690,10 +687,12 @@ function rlist(){
   });}
   var ah='';
   [{id:"AT-1041",e:"Status changed to In Progress",t:"2h ago",a:"Maya R."},{id:"AT-1038",e:"Ticket opened",t:"5h ago",a:"You"},{id:"AT-1031",e:"Marked as Done",t:"1d ago",a:"Sam K."}].forEach(function(a){ah+='<div class="ai"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--sub)">'+a.e+'</span><span style="color:var(--muted)">'+a.a+'</span><span style="color:var(--muted);font-size:11px">'+a.t+'</span></div>';});
-    var sidebar = '<div style="width:200px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px">'
-    +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:4px 8px">Queues</div>'
-    +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:3px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
+  
+  var sidebar = '<div style="width:220px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px;display:flex;flex-direction:column;gap:4px;">'
+    +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:0 8px">Queues</div>'
+    +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
     +'<div class="queue-link'+(ttype==='all'?' active':'')+'" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
+    +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'
     +'<div class="queue-link'+(ttype==='feature'?' active':'')+'" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
     +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()">🔴 Incidents</div>'
     +'<div class="queue-link'+(ttype==='degraded'?' active':'')+'" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
@@ -705,15 +704,16 @@ function rlist(){
       +'<span style="font-size:11px;color:var(--muted)">'+q.tickets.length+'</span>'
       +'</div>';
   }).join('') : '')
-    +'<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
-+'<button class="btn bd bsm" style="width:100%;font-size:12px" onclick="openQueueModal()">+ Create custom queue</button>'
-+'</div>'
-+'</div>';
+    +'<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">'
+    +'<button class="btn bd bsm" style="width:100%;font-size:12px" onclick="openQueueModal()">+ Create custom queue</button>'
+    +'<button class="btn bd bsm" style="width:100%;font-size:12px;color:var(--red)" onclick="doLogout()">Logout</button>'
+    +'</div>'
+  +'</div>';
 
   var content = '<div style="flex:1;min-width:0">'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="al">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1><p style="color:var(--sub);font-size:14px">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
     +'<div class="sgrid" style="margin-bottom:24px"><div class="sc"><div class="sv" style="color:var(--blue)">'+op+'</div><div class="sl">Open</div></div><div class="sc"><div class="sv" style="color:var(--amber)">'+ip+'</div><div class="sl">In Progress</div></div><div class="sc"><div class="sv" style="color:var(--green)">'+rs+'</div><div class="sl">Resolved</div></div><div class="sc"><div class="sv" style="color:var(--sub)">'+tickets.length+'</div><div class="sl">Total</div></div></div>'
-    +'<div class="fbar"><div class="sw" style="max-width:280px"><span class="si">⌕</span><input type="text" placeholder="Search tickets..." value="'+ts+'" oninput="ts=this.value;rlist()"></div>'
+    +'<div class="fbar"><div class="sw" style="max-width:280px"><span class="si"></span><input type="text" placeholder="Search tickets..." value="'+ts+'" oninput="ts=this.value;rlist()"></div>'
     +'<div class="fc'+(tf==='all'?' active':'')+'" onclick="tf=\'all\';rlist()">All tickets</div>'
     +'<div class="fc'+(tf==='open'?' active':'')+'" onclick="tf=\'open\';rlist()">Open</div>'
     +'<div class="fc'+(tf==='in-progress'?' active':'')+'" onclick="tf=\'in-progress\';rlist()">In progress</div>'
@@ -723,10 +723,10 @@ function rlist(){
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px"><table class="jtbl" style="font-size:13px"><thead><tr>'+th+'</tr></thead><tbody>'+tb+'</tbody></table></div>'
     +'<div style="font-size:12px;font-weight:600;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>'
     +'<div class="card" style="padding:0 16px">'+ah+'</div>'
-    + '</div>';
+  + '</div>';
 
   document.getElementById('sv-list').innerHTML = '<div style="display:flex;gap:24px;align-items:start">' + sidebar + content + '</div>';
-  }
+}
 function tcp(){var p=document.getElementById('cpick');if(p)p.style.display=p.style.display==='none'?'block':'none';}
 function tcol(c,v){if(v&&vcols.indexOf(c)===-1)vcols.push(c);else if(!v)vcols=vcols.filter(function(x){return x!==c;});rlist();}
 function tsel(id,v){if(v&&sel.indexOf(id)===-1)sel.push(id);else sel=sel.filter(function(x){return x!==id;});rlist();}
@@ -735,9 +735,9 @@ function qupd(id,aid,s){
   var t=tickets.find(function(x){return x.id===id;});
   if(t){
     t.status=s;
-    // Persist status to localStorage so it survives refresh
     try{localStorage.setItem('status_'+id,s);}catch(e){}
     if(aid)updATstatus(aid,s);
+    notifyReporter(id, "Ticket status updated to: " + s);
     rlist();
   }
 }
@@ -752,7 +752,6 @@ function updATstatus(aid,s){
 function dtk(id){
   if(!confirm('Delete this ticket?'))return;
   if(dels.indexOf(id)===-1)dels.push(id);
-  // Delete from Airtable if it has an ID
   var t=tickets.find(function(x){return x.id===id;});
   if(t&&t.aid){
     fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+t.aid,{
@@ -760,7 +759,6 @@ function dtk(id){
       headers:{'Authorization':'Bearer '+AT}
     }).catch(function(e){console.error('AT delete error:',e);});
   }
-  // Always clean up locally
   try{localStorage.removeItem('img_'+id);localStorage.removeItem('status_'+id);}catch(e){}
   tickets=tickets.filter(function(t){return t.id!==id;});
   sel=sel.filter(function(x){return x!==id;});
@@ -772,9 +770,8 @@ function dtk(id){
   }
   rlist();
 }
-  
-// === NEW TICKET ===
-function showNew(){ns=1;nf={type:"incident",title:"",priority:"High",desc:"",att:"",ad:""};document.getElementById('sv-list').style.display='none';document.getElementById('sv-det').style.display='none';document.getElementById('sv-new').style.display='block';rnew();}
+
+function showNew(){ns=1;nf={type:"incident",title:"",priority:"High",desc:"",att:"",ad:"",email:""};document.getElementById('sv-list').style.display='none';document.getElementById('sv-det').style.display='none';document.getElementById('sv-new').style.display='block';rnew();}
 function rnew(){
   var v=document.getElementById('sv-new');
   var sh='';["Issue Type","Details","Review"].forEach(function(s,i){sh+='<div style="display:flex;align-items:center"><div style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:'+(ns>i+1?'var(--green)':ns===i+1?'var(--blue)':'#DFE1E6')+';color:'+(ns>=i+1?'#fff':'#8993A4')+'">'+(ns>i+1?'✓':i+1)+'</div><span style="font-size:12px;font-weight:500;margin-left:6px;white-space:nowrap;color:'+(ns===i+1?'var(--text)':'var(--sub)')+'">'+s+'</span>'+(i<2?'<div style="width:36px;height:2px;background:'+(ns>i+1?'var(--blue)':'#DFE1E6')+';margin:0 10px;flex-shrink:0"></div>':'')+'</div>';});
@@ -783,10 +780,11 @@ function rnew(){
     var th='';TT.forEach(function(t){th+='<div class="tc'+(nf.type===t.id?' sel':'')+'" onclick="nf.type=\''+t.id+'\';rnew()" style="'+(nf.type===t.id?'border-color:var(--blue);background:var(--blight)':'')+'"><div style="font-size:22px;margin-bottom:8px">'+t.icon+'</div><div style="font-size:13px;font-weight:600;color:'+(nf.type===t.id?'var(--blue)':'var(--text)')+';margin-bottom:3px">'+t.label+'</div><div style="font-size:11px;color:var(--sub)">'+t.desc+'</div></div>';});
     bH='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:24px">'+th+'</div><div style="display:flex;gap:8px"><button class="btn bd" onclick="tf=\'all\';ts=\'\';rlist()">Cancel</button><button class="btn bp" onclick="ns=2;rnew()">Next</button></div>';
   } else if(ns===2){
-    bH='<div style="margin-bottom:16px"><label class="fl">Title *</label><input type="text" id="ntit" placeholder="Brief summary" value="'+nf.title+'" oninput="nf.title=this.value"></div>'
+    bH='<div style="margin-bottom:16px"><label class="fl">Your Email *</label><input type="email" id="nemail" placeholder="your.email@example.com" value="'+(nf.email||'')+'" oninput="nf.email=this.value"></div>'
+      +'<div style="margin-bottom:16px"><label class="fl">Title *</label><input type="text" id="ntit" placeholder="Brief summary" value="'+nf.title+'" oninput="nf.title=this.value"></div>'
       +'<div style="margin-bottom:16px"><label class="fl">Description *</label><textarea id="ndesc" rows="5" placeholder="Describe the issue..." oninput="nf.desc=this.value">'+nf.desc+'</textarea></div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px"><div><label class="fl">Product</label><select id="nprod" onchange="nf.prod=this.value">'+['Jira','Confluence','Bitbucket','Trello','Atlassian Access','Status Page'].map(function(p){return '<option>'+p+'</option>';}).join('')+'</select></div><div><label class="fl">Priority</label><select id="npri" onchange="nf.priority=this.value">'+['Critical','High','Medium','Low'].map(function(p){return '<option'+(nf.priority===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div></div>'
-      +'<div style="margin-bottom:20px"><label class="fl">Attachment</label><div class="az" onclick="nf.att=nf.att?\'\':\'screenshot.png\';rnew()">'+(nf.att?'📎 '+nf.att+' ✕':'📎 Click to attach a file')+'</div></div>'
+      +'<div style="margin-bottom:20px"><label class="fl">Attachment</label><div class="az" onclick="nf.att=nf.att?\'\':\'screenshot.png\';rnew()">'+(nf.att?' '+nf.att+' ✕':' Click to attach a file')+'</div></div>'
       +'<div style="display:flex;gap:8px"><button class="btn bd" onclick="ns=1;rnew()">Back</button><button class="btn bp" style="'+(!(nf.title&&nf.desc)?'opacity:.5;cursor:not-allowed':'')+'" onclick="if(nf.title&&nf.desc){ns=3;rnew()}">Review</button></div>';
   } else {
     var tt=TT.find(function(t){return t.id===nf.type;});
@@ -803,48 +801,30 @@ function rnew(){
   }
   v.innerHTML='<button class="btn bs bsm" style="margin-bottom:12px;padding-left:0" onclick="tf=\'all\';ts=\'\';rlist()">‹ Back to tickets</button><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px">Raise a ticket</h1><p style="color:var(--sub);font-size:14px;margin-bottom:20px">Get help from our support team</p><div style="display:flex;align-items:center;margin-bottom:24px">'+sh+'</div>'+bH;
 }
-function handleImg(input){
-  if(!input.files||!input.files[0])return;
-  var file=input.files[0];
-  nf.att=file.name;
-  // Read locally for preview
-  var reader=new FileReader();
-  reader.onload=function(e){nf.ad=e.target.result;rnew();};
-  reader.readAsDataURL(file);
-  // Upload to Cloudinary for cross-device access
-  var fd=new FormData();
-  fd.append('file',file);
-  fd.append('upload_preset','ml_default');
-  fetch('https://api.cloudinary.com/v1_1/dmjopp4mt/image/upload',{method:'POST',body:fd})
-    .then(function(r){return r.json();})
-    .then(function(d){if(d.secure_url)nf.cloudUrl=d.secure_url;})
-    .catch(function(e){console.log('Cloudinary upload failed, using local',e);});
-}
 
 function subT(){
   var btns=document.getElementById('nbtns'),send=document.getElementById('nsend'),ok=document.getElementById('nok');
   btns.style.display='none';send.style.display='block';
   var nid='AT-'+Date.now().toString().slice(-6);
   var tt=TT.find(function(t){return t.id===nf.type;});
-  var fields={Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:'admin@internal',Submitted:new Date().toLocaleString('en-GB')};
+  var reporterEmail = nf.email || 'admin@internal';
+  var fields={Name:'Admin',TicketsID:nid,Type:tt?tt.label:nf.type,Title:nf.title,Description:nf.desc,Priority:nf.priority,Email:reporterEmail,Submitted:new Date().toLocaleString('en-GB')};
   if(nf.cloudUrl)fields.ImageURL=nf.cloudUrl;
   fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{method:'POST',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({records:[{fields:fields}]})})
   .then(function(){
     send.style.display='none';ok.style.display='block';
-    // Save image to localStorage as fallback
-  if(nf.ad&&nf.ad.startsWith('data:image/')){
-    try{localStorage.setItem('img_'+nid,JSON.stringify({name:nf.att,data:nf.ad,url:nf.cloudUrl||''}));}catch(e){}
-  }
-  tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',msgs:[{from:'Admin',text:nf.desc,time:'just now',agent:false}],aid:'',fn:'Admin',fe:'',an:nf.att||'',ad:nf.cloudUrl||nf.ad||''});
+    if(nf.ad&&nf.ad.startsWith('data:image/')){
+      try{localStorage.setItem('img_'+nid,JSON.stringify({name:nf.att,data:nf.ad,url:nf.cloudUrl||''}));}catch(e){}
+    }
+    tickets.unshift({id:nid,type:nf.type,title:nf.title,priority:nf.priority,status:'open',created:new Date().toISOString().split('T')[0],updated:'just now',assignee:'Unassigned',msgs:[{from:'Admin',text:nf.desc,time:'just now',agent:false}],aid:'',fn:'Admin',fe:reporterEmail,an:nf.att||'',ad:nf.cloudUrl||nf.ad||''});
+    notifyReporter(nid, "Your ticket has been successfully created.");
     setTimeout(function(){tf='all';ts='';rlist();document.getElementById('sv-new').style.display='none';document.getElementById('sv-list').style.display='block';},2400);
   }).catch(function(){send.style.display='none';btns.style.display='flex';alert('Could not save.');});
 }
 
-// === TICKET DETAIL ===
 function otk(id){sid=id;document.getElementById('sv-list').style.display='none';document.getElementById('sv-new').style.display='none';document.getElementById('sv-det').style.display='block';editOn=false;rdet();}
 function rdet(){
   var t=tickets.find(function(x){return x.id===sid;});if(!t)return;
-  // Load image from localStorage if not already loaded
   if(!t.ad || !t.ad.startsWith('data:image/')){
     try{
       var stored=localStorage.getItem('img_'+t.id);
@@ -892,13 +872,13 @@ function rdet(){
     +'<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Priority</div><div id="vpriority"><span class="loz lgr">'+(t.priority||'—')+'</span></div><select id="einp-priority" style="display:none;font-size:12px;padding:5px 8px"><option '+(t.priority==='Critical'?'selected':'')+'>Critical</option><option '+(t.priority==='High'?'selected':'')+'>High</option><option '+(t.priority==='Medium'?'selected':'')+'>Medium</option><option '+(t.priority==='Low'?'selected':'')+'>Low</option></select></div>'
     +'<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Created</div><div id="vcreated" style="font-size:13px;color:var(--text)">'+(t.created||'—')+'</div><input type="text" id="einp-created" value="'+(t.created||'')+'" style="display:none;font-size:12px;padding:5px 8px"></div>'
     +'<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Custom Queue</div>'
-+'<select onchange="if(this.value){assignTicketToQueue(\''+t.id+'\',this.value)}else{removeFromQueue(\''+t.id+'\')}" style="width:100%;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid var(--border)">'
-+'<option value="">None</option>'
-+ (customQueues.map(function(q) { 
-    var selected = q.tickets.indexOf(t.id) !== -1 ? 'selected' : '';
-    return '<option value="'+q.id+'" '+selected+'>'+q.name+'</option>'; 
-  }).join(''))
-+'</select></div>'
+    +'<select onchange="if(this.value){assignTicketToQueue(\''+t.id+'\',this.value)}else{removeFromQueue(\''+t.id+'\')}" style="width:100%;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid var(--border)">'
+    +'<option value="">None</option>'
+    + (customQueues.map(function(q) { 
+        var selected = q.tickets.indexOf(t.id) !== -1 ? 'selected' : '';
+        return '<option value="'+q.id+'" '+selected+'>'+q.name+'</option>'; 
+      }).join(''))
+    +'</select></div>'
     +'<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Updated</div><div style="font-size:13px;color:var(--text)">'+(t.updated||'—')+'</div></div>'
     +'<div id="savbtns" style="display:none;margin-top:16px"><button class="btn bp bsm" style="width:100%;margin-bottom:6px" onclick="savEdit()">💾 Save changes</button><button class="btn bd bsm" style="width:100%" onclick="tedit()">Cancel</button></div>'
     +'</div></div>';
@@ -930,10 +910,10 @@ function sreply(id){
   var inp=document.getElementById('rinp');var txt=inp?inp.value.trim():'';if(!txt)return;
   var t=tickets.find(function(x){return x.id===id;});if(!t)return;
   t.msgs.push({from:'You',text:txt,time:'just now',agent:false});t.updated='just now';rdet();
+  notifyReporter(id, "New reply added to your ticket: " + txt);
   setTimeout(function(){var tn=tickets.find(function(x){return x.id===id;});if(!tn)return;tn.msgs.push({from:'Support Agent',text:'Thanks for the update! Our team is looking into this.',time:'just now',agent:true});if(sid===id)rdet();},2000);
 }
 
-// === DEEP LINK ===
 window.addEventListener('DOMContentLoaded',function(){
   var hash=window.location.hash;
   if(!hash||!hash.startsWith('#ticket-'))return;
@@ -946,18 +926,14 @@ window.addEventListener('DOMContentLoaded',function(){
   rlist();
   fetchAT().then(function(){rlist();setTimeout(function(){var ex=tickets.find(function(t){return t.id===id;});if(ex)otk(id);},600);});
 });
-
-// Close column picker on outside click
 document.addEventListener('click',function(e){var p=document.getElementById('cpick');if(p&&p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('[onclick="tcp()"]'))p.style.display='none';});
 
-// === INIT ===
 rarch();
 rdash();
 rchl();
 rchc();
 rlist();
 fetchAT();
-// Restore last active tab
 (function(){
   try{
     var saved=localStorage.getItem('activeTab');
@@ -967,32 +943,24 @@ fetchAT();
     }
   }catch(e){}
 })();
-
-// Auto-refresh Airtable every 30 seconds when on support tab
 setInterval(function(){
   if(document.getElementById('tp-sup').classList.contains('active')){
     fetchAT();
   }
 },30000);
-  // Force define bupd globally at the end of the script
+
 window.bupd = function(s) {
     console.log('Bulk update triggered for status:', s);
     console.log('Selected tickets:', sel);
-    
     if (sel.length === 0) {
         alert('Please select a ticket first.');
         return;
     }
-
     sel.forEach(function(id) {
         var t = tickets.find(function(x) { return x.id === id; });
         if (t) {
             t.status = s;
-            
-            // 1. Save to LocalStorage (This makes it persist after refresh)
             try { localStorage.setItem('status_' + id, s); } catch (e) {}
-            
-            // 2. Update Airtable (Using 'Progress' to match your screenshot)
             if (t.aid) {
                 var map = { 'open': 'Open', 'in-progress': 'Progress', 'resolved': 'Resolved', 'closed': 'Closed' };
                 var atVal = map[s] || s;
@@ -1004,12 +972,10 @@ window.bupd = function(s) {
             }
         }
     });
-    
-    sel = []; // Clear selection
-    rlist();  // Refresh the list
+    sel = [];
+    rlist();
 };
 
-  // === AUTHENTICATION ===
 function checkAuth() {
     var isLoggedIn = sessionStorage.getItem('ep_logged_in') === 'true';
     document.getElementById('login-overlay').style.display = isLoggedIn ? 'none' : 'flex';
@@ -1019,10 +985,11 @@ function checkAuth() {
 function doLogin() {
     var u = document.getElementById('login-user').value.trim();
     var p = document.getElementById('login-pass').value.trim();
-    
-    // CHANGE THESE TO YOUR DESIRED CREDENTIALS
-    if (u === 'admin' && p === 'admin') {
+    var users = getUsers();
+    var validUser = users.find(function(user) { return user.username === u && user.password === p; });
+    if (validUser) {
         sessionStorage.setItem('ep_logged_in', 'true');
+        sessionStorage.setItem('ep_current_user', u);
         checkAuth();
     } else {
         var err = document.getElementById('login-error');
@@ -1036,31 +1003,24 @@ function doLogout() {
     location.reload();
 }
 
-// Allow pressing "Enter" to login
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && document.getElementById('login-overlay').style.display === 'flex') {
         doLogin();
     }
 });
 
-// Run auth check on load
 checkAuth();
-// === ACCOUNT MANAGEMENT ===
+
 function showAccount() {
-    // Hide all tabs and show account page
     document.querySelectorAll('.tp').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
     document.getElementById('tp-account').classList.add('active');
     document.getElementById('bc').textContent = 'Account Settings';
-
-    // Load current settings
     const savedUser = localStorage.getItem('ep_user') || 'admin';
     const savedPass = localStorage.getItem('ep_pass') || 'admin';
     const savedImg = localStorage.getItem('ep_img') || '';
-
     document.getElementById('acc-username').value = savedUser;
     document.getElementById('acc-password').value = savedPass;
-
     updateAccPreview(savedUser, savedImg);
 }
 
@@ -1070,23 +1030,17 @@ function updateAccPreview(user, img) {
     const sidebarAv = document.getElementById('sidebar-av');
     const topbarAv = document.getElementById('topbar-av');
     const sidebarUser = document.getElementById('sidebar-user');
-
-    // Update Account Page Preview
     if (img) {
         preview.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">`;
     } else {
         preview.innerHTML = initials;
     }
-
-    // Update Sidebar Avatar
     if (img) {
         sidebarAv.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     } else {
         sidebarAv.innerHTML = initials;
     }
     sidebarUser.textContent = user || 'You';
-
-    // Update Topbar Avatar
     if (img) {
         topbarAv.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     } else {
@@ -1097,12 +1051,10 @@ function updateAccPreview(user, img) {
 function handleAccImg(event) {
     const file = event.target.files[0];
     if (!file) return;
-
     if (file.size > 2 * 1024 * 1024) {
         alert('File is too large! Max 2MB.');
         return;
     }
-
     const reader = new FileReader();
     reader.onload = function(e) {
         localStorage.setItem('ep_img', e.target.result);
@@ -1115,154 +1067,28 @@ function handleAccImg(event) {
 function saveAccount() {
     const user = document.getElementById('acc-username').value.trim();
     const pass = document.getElementById('acc-password').value.trim();
-
     if (!user || !pass) {
         alert('Username and password cannot be empty.');
         return;
     }
-
-    // Update the user in our list
     var users = getUsers();
     var currentUser = sessionStorage.getItem('ep_current_user') || 'admin';
-    
-    // Find the user and update them
     var userIndex = users.findIndex(function(u) { return u.username === currentUser; });
     if (userIndex !== -1) {
         users[userIndex].username = user;
         users[userIndex].password = pass;
         saveUsers(users);
-        sessionStorage.setItem('ep_current_user', user); // Update session
+        sessionStorage.setItem('ep_current_user', user);
     } else {
-        // Fallback if not found
         localStorage.setItem('ep_user', user);
         localStorage.setItem('ep_pass', pass);
     }
-
-    // Show success message
     const msg = document.getElementById('acc-msg');
     msg.style.display = 'block';
     setTimeout(() => { msg.style.display = 'none'; }, 3000);
-
-    // Update UI immediately
     updateAccPreview(user, localStorage.getItem('ep_img') || '');
 }
 
-// UPDATE LOGIN FUNCTION TO USE SAVED CREDENTIALS
-function doLogin() {
-    var u = document.getElementById('login-user').value.trim();
-    var p = document.getElementById('login-pass').value.trim();
-    var users = getUsers();
-    
-    // Check if user exists in our list
-    var validUser = users.find(function(user) { 
-        return user.username === u && user.password === p; 
-    });
-
-    if (validUser) {
-        sessionStorage.setItem('ep_logged_in', 'true');
-        sessionStorage.setItem('ep_current_user', u); // Remember who is logged in
-        checkAuth();
-    } else {
-        var err = document.getElementById('login-error');
-        err.style.display = 'block';
-        setTimeout(function(){ err.style.display = 'none'; }, 3000);
-    }
-}
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Find the credentials section by looking for "Save changes" button
-    const allButtons = document.querySelectorAll('button');
-    let saveChangesBtn = null;
-    
-    for (let btn of allButtons) {
-        if (btn.textContent.trim() === 'Save changes') {
-            saveChangesBtn = btn;
-            break;
-        }
-    }
-    
-    // Get the parent container of the credentials form
-    let credentialsContainer = null;
-    if (saveChangesBtn) {
-        // Go up the DOM tree to find the main container
-        credentialsContainer = saveChangesBtn.closest('div') || saveChangesBtn.parentElement;
-        
-        // Keep going up until we find a reasonable container
-        let parent = credentialsContainer;
-        for (let i = 0; i < 5 && parent; i++) {
-            parent = parent.parentElement;
-            if (parent && (parent.className.includes('card') || parent.className.includes('section') || parent.tagName === 'SECTION')) {
-                credentialsContainer = parent;
-                break;
-            }
-        }
-    }
-  
-    // Check if we're on the account page by checking URL or active nav
-    const currentPath = window.location.href;
-    const manageAccountLink = document.querySelector('a[href*="account"], a[href*="manage"]');
-    const isAccountPage = currentPath.includes('account') || 
-                          (manageAccountLink && manageAccountLink.closest('.active'));
-    
-    // Also check if "Account Settings" text is visible on page
-    const allText = document.body.textContent;
-    const hasAccountSettings = allText.includes('Account Settings') && allText.includes('Manage your profile');
-    
-    // Hide credentials if not on account page
-    if (credentialsContainer && !hasAccountSettings) {
-        credentialsContainer.style.display = 'none';
-        credentialsContainer.style.visibility = 'hidden';
-        credentialsContainer.style.height = '0';
-        credentialsContainer.style.overflow = 'hidden';
-    }
-    
-    // Hide when clicking navigation
-    const navLinks = document.querySelectorAll('a');
-    navLinks.forEach(link => {
-        const text = link.textContent.trim();
-        if (['Architecture', 'Dashboard', 'Tickets', 'Deep Dive', 'Logout'].includes(text)) {
-            link.addEventListener('click', function() {
-                if (credentialsContainer) {
-                    credentialsContainer.style.display = 'none';
-                }
-            });
-        }
-    });
-});
-</script>
-<!-- Custom Queue Modal -->
-<div id="queue-modal" style="display:none;position:fixed;inset:0;background:rgba(9,30,66,.5);z-index:200;align-items:center;justify-content:center">
-  <div class="mbox">
-    <div class="mhd"><h2>Create Custom Queue</h2><button class="mcl" onclick="closeQueueModal()">✕</button></div>
-    <div class="mbdy">
-      <div style="margin-bottom:16px">
-        <label class="fl">Queue Name</label>
-        <input type="text" id="queue-name" placeholder="e.g., My Team's Tickets">
-      </div>
-      <div style="margin-bottom:16px">
-        <label class="fl">Color</label>
-        <select id="queue-color">
-          <option value="#0C66E4">Blue</option>
-          <option value="#1F845A">Green</option>
-          <option value="#CA3521">Red</option>
-          <option value="#974F0C">Amber</option>
-          <option value="#6E5DC6">Purple</option>
-        </select>
-      </div>
-      <div style="margin-bottom:16px">
-        <label class="fl">Description (optional)</label>
-        <input type="text" id="queue-desc" placeholder="Brief description">
-      </div>
-    </div>
-    <div class="mft">
-      <button class="btn bd" onclick="closeQueueModal()">Cancel</button>
-      <button class="btn bp" onclick="createCustomQueue()">Create Queue</button>
-    </div>
-  </div>
-</div>
-  <script>
-// Custom Queue Functions
 function openQueueModal() {
   document.getElementById('queue-modal').style.display = 'flex';
   document.getElementById('queue-name').value = '';
@@ -1277,12 +1103,10 @@ function createCustomQueue() {
   var name = document.getElementById('queue-name').value.trim();
   var color = document.getElementById('queue-color').value;
   var desc = document.getElementById('queue-desc').value.trim();
-  
   if (!name) {
     alert('Please enter a queue name');
     return;
   }
-  
   var queue = {
     id: 'queue_' + Date.now(),
     name: name,
@@ -1290,7 +1114,6 @@ function createCustomQueue() {
     desc: desc,
     tickets: []
   };
-  
   customQueues.push(queue);
   saveCustomQueues();
   closeQueueModal();
@@ -1323,7 +1146,6 @@ function deleteCustomQueue(queueId) {
 function assignTicketToQueue(ticketId, queueId) {
   var ticket = tickets.find(function(t) { return t.id === ticketId; });
   var queue = customQueues.find(function(q) { return q.id === queueId; });
-  
   if (ticket && queue) {
     customQueues.forEach(function(q) {
       q.tickets = q.tickets.filter(function(tid) { return tid !== ticketId; });
@@ -1342,7 +1164,6 @@ function removeFromQueue(ticketId) {
   rlist();
 }
 
-// Load custom queues on page load
 loadCustomQueues();
 </script>
 </body>
