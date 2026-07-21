@@ -486,7 +486,7 @@ function TBA(){var a=document.querySelector('.ni.active');if(!a)return;if(a.data
 
 // === AIRTABLE ===
 var lastFetchTime = 0;
-var FETCH_COOLDOWN = 10000;
+var FETCH_COOLDOWN = 60000;
 
 function fetchAT(){
     var now = Date.now();
