@@ -464,22 +464,39 @@ function ST(id,el){
 function TBA(){var a=document.querySelector('.ni.active');if(!a)return;if(a.dataset.tab==='dash')openM();if(a.dataset.tab==='sup')showNew();}
 
 // === AIRTABLE ===
+// === AIRTABLE ===
+var lastFetchTime = 0;
+var FETCH_COOLDOWN = 10000; // 10 seconds between requests
+
 function fetchAT(){
-  var rb=document.querySelector('[onclick="fetchAT()"]');
-  if(rb){rb.textContent='↻ Loading...';rb.disabled=true;}
-  return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{headers:{'Authorization':'Bearer '+AT}})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      if(!data.records)return;
-      data.records.forEach(function(r){
-        var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
-        if(dels.indexOf(tid)!==-1)return;
-        var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
-        
-        // ALWAYS check localStorage first, regardless of existing or new
-        var lsStatus='';
-        try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
-        
+    // Rate limit check
+    var now = Date.now();
+    if (now - lastFetchTime < FETCH_COOLDOWN) {
+        console.log('Rate limit: waiting ' + Math.ceil((FETCH_COOLDOWN - (now - lastFetchTime))/1000) + ' seconds...');
+        return Promise.resolve(); // Return empty promise, don't fetch
+    }
+    lastFetchTime = now;
+    
+    var rb=document.querySelector('[onclick="fetchAT()"]');
+    if(rb){rb.textContent=' Loading...';rb.disabled=true;}
+    
+    return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{headers:{'Authorization':'Bearer '+AT}})
+        .then(function(r){return r.json();})
+        .then(function(data){
+            if(!data.records)return;
+            data.records.forEach(function(r){
+                var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
+                if(dels.indexOf(tid)!==-1)return;
+                var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
+                
+                // ALWAYS check localStorage first, regardless of existing or new
+                var lsStatus='';
+                try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
+                
+                // ... rest of your existing code continues from line 482
+            });
+        });
+}
         if(existing){
           if(lsStatus){existing.status=lsStatus;}
           else if(f.Status){existing.status={Open:'open','In Progress':'in-progress','Progress':'in-progress',Resolved:'resolved',Closed:'closed'}[f.Status]||existing.status;}
