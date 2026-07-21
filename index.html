@@ -708,14 +708,16 @@ function rlist(){
     tb+=row;
   });}
   var ah='';
-  [{id:"AT-1041",e:"Status changed to In Progress",t:"2h ago",a:"Maya R."},{id:"AT-1038",e:"Ticket opened",t:"5h ago",a:"You"},{id:"AT-1031",e:"Marked as Done",t:"1d ago",a:"Sam K."}].forEach(function(a){ah+='<div class="ai"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--sub)">'+a.e+'</span><span style="color:var(--muted)">'+a.a+'</span><span style="color:var(--muted);font-size:11px">'+a.t+'</span></div>';});
-    var sidebar = '<div style="width:200px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px">'
-    +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:4px 8px">Queues</div>'
-    +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:3px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
+  [{id:"AT-1041",e:"Status changed to In Progress",t:"2h ago",a:"Maya R."},{id:"AT-1038",e:"Ticket opened",t:"5h ago",a:"You"},{id:"AT-1031",e:"Marked as Done",t:"1d ago",a:"Sam K."}].forEach(function(a){ah+='<div class="ai" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px rgba(12,102,228,.15)"></span><span style="font-size:11px;color:var(--sub);min-width:70px;font-family:monospace">'+a.id+'</span><span style="flex:1;color:var(--sub);font-size:13px">'+a.e+'</span><span style="color:var(--muted);font-size:12px">'+a.a+'</span><span style="color:var(--muted);font-size:11px">'+a.t+'</span></div>';});
+
+  // --- FIXED SIDEBAR ---
+  var sidebar = '<div style="width:220px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;box-shadow:var(--sh);height:fit-content;position:sticky;top:24px;display:flex;flex-direction:column;gap:4px;">'
+    +'<div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:0 8px">Queues</div>'
+    +'<style>.queue-link{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;margin:2px 0;color:var(--text);border-left:3px solid transparent;transition:all .15s;}.queue-link:hover{background:var(--bl);}.queue-link.active{background:var(--blight);color:var(--blue);border-left-color:var(--blue);}</style>'
     +'<div class="queue-link'+(ttype==='all'?' active':'')+'" onclick="ttype=\'all\';rlist()">📋 All tickets</div>'
     +'<div class="queue-link'+(ttype==='open'?' active':'')+'" onclick="ttype=\'open\';rlist()">🟢 Open</div>'
     +'<div class="queue-link'+(ttype==='feature'?' active':'')+'" onclick="ttype=\'feature\';rlist()">🟢 Service requests</div>'
-    +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()">🔴 Incidents</div>'
+    +'<div class="queue-link'+(ttype==='incident'?' active':'')+'" onclick="ttype=\'incident\';rlist()"> Incidents</div>'
     +'<div class="queue-link'+(ttype==='degraded'?' active':'')+'" onclick="ttype=\'degraded\';rlist()">🟡 Problems</div>'
     +'<div class="queue-link'+(ttype==='billing'?' active':'')+'" onclick="ttype=\'billing\';rlist()">🟣 Changes</div>'
       +(customQueues.length > 0 ? customQueues.map(function(q) {
@@ -725,10 +727,38 @@ function rlist(){
       +'<span style="font-size:11px;color:var(--muted)">'+q.tickets.length+'</span>'
       +'</div>';
   }).join('') : '')
-    +'<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
-+'<button class="btn bd bsm" style="width:100%;font-size:12px" onclick="openQueueModal()">+ Create custom queue</button>'
-+'</div>'
-+'</div>';
+    +'<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">'
+    +'<button class="btn bd bsm" style="width:100%;font-size:12px" onclick="openQueueModal()">+ Create custom queue</button>'
+    +'<button class="btn bd bsm" style="width:100%;font-size:12px;color:var(--red)" onclick="logout()">Logout</button>'
+    +'</div>'
+  +'</div>';
+
+  // --- FIXED CONTENT & SEARCH BAR ---
+  var content = '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px"><div><div class="al" style="font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin:0 0 4px 0">My Tickets</h1><p style="color:var(--sub);font-size:14px;margin:0">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
+    
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:8px">'
+    +'<div class="sc" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px"><div class="sv" style="font-size:24px;font-weight:700;color:var(--blue)">'+op+'</div><div class="sl" style="font-size:12px;color:var(--sub);margin-top:4px">Open</div></div>'
+    +'<div class="sc" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px"><div class="sv" style="font-size:24px;font-weight:700;color:var(--amber)">'+ip+'</div><div class="sl" style="font-size:12px;color:var(--sub);margin-top:4px">In Progress</div></div>'
+    +'<div class="sc" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px"><div class="sv" style="font-size:24px;font-weight:700;color:var(--green)">'+rs+'</div><div class="sl" style="font-size:12px;color:var(--sub);margin-top:4px">Resolved</div></div>'
+    +'<div class="sc" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px"><div class="sv" style="font-size:24px;font-weight:700;color:var(--sub)">'+tickets.length+'</div><div class="sl" style="font-size:12px;color:var(--sub);margin-top:4px">Total</div></div>'
+    +'</div>'
+
+    // Fixed Search Bar Layout
+    +'<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">'
+    +'<div style="flex:1;min-width:200px;max-width:300px;position:relative"><span class="si" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)">⌕</span><input type="text" placeholder="Search tickets..." value="'+ts+'" oninput="ts=this.value;rlist()" style="width:100%;padding:8px 8px 8px 32px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none"></div>'
+    +'<div class="fc'+(tf==='all'?' active':'')+'" onclick="tf=\'all\';rlist()" style="padding:6px 12px;cursor:pointer;border-radius:4px;font-size:13px;font-weight:500;'+(tf==='all'?'background:var(--blight);color:var(--blue)':'')+'">All tickets</div>'
+    +'<div class="fc'+(tf==='open'?' active':'')+'" onclick="tf=\'open\';rlist()" style="padding:6px 12px;cursor:pointer;border-radius:4px;font-size:13px;font-weight:500;'+(tf==='open'?'background:var(--blight);color:var(--blue)':'')+'">Open</div>'
+    +'<div class="fc'+(tf==='in-progress'?' active':'')+'" onclick="tf=\'in-progress\';rlist()" style="padding:6px 12px;cursor:pointer;border-radius:4px;font-size:13px;font-weight:500;'+(tf==='in-progress'?'background:var(--blight);color:var(--blue)':'')+'">In progress</div>'
+    +'<div class="fc'+(tf==='resolved'?' active':'')+'" onclick="tf=\'resolved\';rlist()" style="padding:6px 12px;cursor:pointer;border-radius:4px;font-size:13px;font-weight:500;'+(tf==='resolved'?'background:var(--blight);color:var(--blue)':'')+'">Resolved</div>'
+    +'<div style="margin-left:auto;position:relative"><button class="btn bd bsm" onclick="tcp()">⚙ Columns </button><div id="cpick" style="display:none;position:absolute;right:0;top:36px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;min-width:180px;box-shadow:var(--sm);z-index:100">'+pk+'</div></div>'
+    +'</div>'
+
+    +bk
+    +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px;border:1px solid var(--border);border-radius:8px"><table class="jtbl" style="font-size:13px;width:100%;border-collapse:collapse"><thead><tr>'+th+'</tr></thead><tbody>'+tb+'</tbody></table></div>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Recent Activity</div>'
+    +'<div class="card" style="padding:0 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">'+ah+'</div>'
+  +'</div>';
 
   var content = '<div style="flex:1;min-width:0">'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="al">Customer Support</div><h1 style="font-family:\'Charlie Display\',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px">My Tickets</h1><p style="color:var(--sub);font-size:14px">Track and manage your support requests</p></div><div style="display:flex;gap:8px"><button class="btn bd bsm" onclick="fetchAT()">↻ Refresh</button><button class="btn bp" onclick="showNew()">+ Raise ticket</button></div></div>'
