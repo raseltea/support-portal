@@ -479,7 +479,7 @@ function ST(id,el){
   try{localStorage.setItem('activeTab',id);}catch(e){}
   if(id==='dash')rdash();
   if(id==='learn'){rchl();rchc();}
-  if(id==='sup'){tf='all';ts='';fetchAT();rlist();}
+  if(id==='sup'){tf='all';ts='';fetchAT().then(function(){rlist();});}
   if(window.innerWidth<=700)closeSB();
 }
 function TBA(){var a=document.querySelector('.ni.active');if(!a)return;if(a.dataset.tab==='dash')openM();if(a.dataset.tab==='sup')showNew();}
@@ -492,12 +492,38 @@ function fetchAT(){
     var now = Date.now();
     if (now - lastFetchTime < FETCH_COOLDOWN) {
         console.log('Rate limit: waiting ' + Math.ceil((FETCH_COOLDOWN - (now - lastFetchTime))/1000) + ' seconds...');
-        return Promise.resolve(); 
+        return Promise.resolve();  // ✓ Already have this
     }
     lastFetchTime = now;
     
     var rb=document.querySelector('[onclick="fetchAT()"]');
     if(rb){rb.textContent=' Loading...';rb.disabled=true;}
+    
+    // ADD THIS - return the fetch promise
+    return fetch('YOUR_AIRTABLE_API_URL', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer YOUR_API_KEY'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Store the tickets data
+        if(data.records) {
+            window.tickets = data.records.map(r => ({
+                id: r.id,
+                ...r.fields
+            }));
+        }
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
+    })
+    .finally(() => {
+        // Re-enable button
+        if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
+    });
+}
     
     return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{headers:{'Authorization':'Bearer '+AT}})
         .then(function(r){return r.json();})
@@ -933,7 +959,6 @@ rdash();
 rchl();
 rchc();
 rlist();
-fetchAT();
 (function(){
   try{
     var saved=localStorage.getItem('activeTab');
