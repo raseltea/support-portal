@@ -492,46 +492,20 @@ function fetchAT(){
     var now = Date.now();
     if (now - lastFetchTime < FETCH_COOLDOWN) {
         console.log('Rate limit: waiting ' + Math.ceil((FETCH_COOLDOWN - (now - lastFetchTime))/1000) + ' seconds...');
-        return Promise.resolve();  // ✓ Already have this
+        return Promise.resolve();
     }
     lastFetchTime = now;
     
-    var rb=document.querySelector('[onclick="fetchAT()"]');
+    var rb = document.querySelector('[onclick="fetchAT()"]');
     if(rb){rb.textContent=' Loading...';rb.disabled=true;}
     
-    // ADD THIS - return the fetch promise
-    return fetch('YOUR_AIRTABLE_API_URL', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer YOUR_API_KEY'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Store the tickets data
-        if(data.records) {
-            window.tickets = data.records.map(r => ({
-                id: r.id,
-                ...r.fields
-            }));
-        }
-    })
-    .catch(err => {
-        console.error('Fetch error:', err);
-    })
-    .finally(() => {
-        // Re-enable button
-        if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
-    });
-}
-    
-    return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB,{headers:{'Authorization':'Bearer '+AT}})
+    return fetch('https://api.airtable.com/v0/'+AB+'/'+ATB, {headers:{'Authorization':'Bearer '+AT}})
         .then(function(r){return r.json();})
         .then(function(data){
-            if(!data.records)return;
+            if(!data.records) return;
             data.records.forEach(function(r){
-                var f=r.fields,tid=f.TicketsID||('AIR-'+r.id.slice(-6));
-                if(dels.indexOf(tid)!==-1)return;
+                var f=r.fields, tid=f.TicketsID||('AIR-'+r.id.slice(-6));
+                if(dels.indexOf(tid)!==-1) return;
                 var existing=tickets.find(function(t){return t.id===tid||t.aid===r.id;});
                 var lsStatus='';
                 try{lsStatus=localStorage.getItem('status_'+tid)||'';}catch(e){}
@@ -550,12 +524,15 @@ function fetchAT(){
                 tickets.unshift({id:tid,type:tfl(f.Type||''),title:f.Title||f.Name||'(no title)',priority:f.Priority||'Medium',status:finalStatus,created:f.Submitted||'',updated:f.Submitted||'just now',assignee:'Unassigned',msgs:f.Description?[{from:f.Name||'User',text:f.Description,time:f.Submitted||'just now',agent:false}]:[],aid:r.id,fn:f.Name||'',fe:f.Email||'',an:imgName,ad:imgUrl||imgData});
             });
             updBadge();
-            if(document.getElementById('tp-sup').classList.contains('active'))rlist();
-        }).catch(function(e){console.error('AT error:',e);}).finally(function(){
+            if(document.getElementById('tp-sup').classList.contains('active')) rlist();
+        }).catch(function(e){
+            console.error('AT error:',e);
+        }).finally(function(){
             var rb=document.querySelector('[onclick="fetchAT()"]');
             if(rb){rb.textContent='↻ Refresh';rb.disabled=false;}
         });
 }
+
 function tfl(l){return {Incident:'incident',Performance:'degraded',Question:'question','Feature Request':'feature',Billing:'billing'}[l]||'question';}
 function updBadge(){var n=tickets.filter(function(t){return t.status==='open'||t.status==='in-progress';}).length;document.getElementById('badge').textContent=n;}
 function updATstatus(aid,s){if(!aid)return;fetch('https://api.airtable.com/v0/'+AB+'/'+ATB+'/'+aid,{method:'PATCH',headers:{'Authorization':'Bearer '+AT,'Content-Type':'application/json'},body:JSON.stringify({fields:{Status:{open:'Open','in-progress':'In Progress',resolved:'Resolved',closed:'Closed'}[s]||s}})});}
